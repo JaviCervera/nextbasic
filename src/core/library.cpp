@@ -1117,7 +1117,7 @@ EXPORT float CALL CallFloatFunction(int func) {
 EXPORT string CALL CallStringFunction(int func) {
     int i;
     void* p[16];
-	char* ret = '\0';
+	char* ret = NULL;
 
     // Pop params from stack
     __nb_InitLibraryStack__();
@@ -1474,7 +1474,7 @@ EXPORT float CALL CallFloatCFunction(int func) {
 EXPORT string CALL CallStringCFunction(int func) {
     int i;
     void* p[16];
-	char* ret = '\0';
+	char* ret = NULL;
 
     // Pop params from stack
     __nb_InitLibraryStack__();

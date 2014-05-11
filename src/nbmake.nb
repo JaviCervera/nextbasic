@@ -20,12 +20,17 @@ Program
 		Return FILENAME_ERROR
 	EndIf
 	
+	'Ensure that we are running from bin folder
+	ChangeDir(ExtractDir(ProgramName()))
+	
 	'Compile if a .nb file
 	Dim nbSource = False
 	Dim compilerCode = 0
 	If Lower(ExtractExt(sourceFilename)) = "nb"
 		nbSource = True
-		compilerCode = System("nbc " + Chr(34) + sourceFilename + Chr(34))
+		Dim cmd$ = "nbc " + Chr(34) + sourceFilename + Chr(34)
+		If PlatformId() <> PLATFORM_WINDOWS : cmd = "./" + cmd : EndIf
+		compilerCode = System(cmd)
 		If compilerCode <> 0 : Return COMPILER_ERROR : EndIf
 	EndIf
 	
@@ -121,7 +126,9 @@ Function GetCommandLine$(cppfilename$, modulesArr, libsArr, isGuiApp)
 	EndIf
 	
 	'Get command line
-	Dim cmd$ = "g++ -w -O3 -m32 -o " + Chr(34) + binfilename + Chr(34) + " " + Chr(34) + cppfilename + Chr(34)
+	Dim cmd$ = "g++ -w -O3 -m32 "
+	If PlatformId() = PLATFORM_MAC : cmd = cmd + "-stdlib=libstdc++ " : EndIf
+	cmd = cmd + "-o " + Chr(34) + binfilename + Chr(34) + " " + Chr(34) + cppfilename + Chr(34)
 	
 	'Add module paths
 	cmd = cmd + " -L. -L" + Chr(34) + ExtractDir(cppfilename) + Chr(34)
@@ -146,7 +153,7 @@ Function GetCommandLine$(cppfilename$, modulesArr, libsArr, isGuiApp)
 		cmd = cmd + " -lgdi32 -lwinmm"
 		If isGuiApp : cmd = cmd + " -mwindows" : EndIf
 	Case PLATFORM_MAC
-		If linkOpenGL : cmd = cmd + " -framework IOKit -framework OpenGL" : EndIf
+		If linkOpenGL : cmd = cmd + " -framework IOKit -framework QuartzCore -framework OpenGL" : EndIf
 		cmd = cmd + " -framework AppKit"
 	Case PLATFORM_LINUX
 		If linkOpenGL : cmd = cmd + " -lGL" : EndIf

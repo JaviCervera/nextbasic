@@ -23,7 +23,7 @@ using namespace std;
 
 #ifndef _WIN32
 static string __nb_stripmangling__(const string& str) {
-    Array* arr = SplitString(str, "@");
+	int arr = SplitString(str, "@");
 	string out = ArrayString(arr, 0);
 	FreeArray(arr);
 	if ( Left(out, 1) == "_" ) out = Right(out, Len(out) - 1);

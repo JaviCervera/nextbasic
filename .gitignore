@@ -11,6 +11,8 @@
 *.exe
 *.out
 *.app
+bin/nbc
+bin/nbmake
 
 # Qt
 
