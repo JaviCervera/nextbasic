@@ -156,7 +156,7 @@ Function GetCommandLine$(cppfilename$, modulesArr, libsArr, isGuiApp)
 		If linkOpenGL : cmd = cmd + " -framework IOKit -framework QuartzCore -framework OpenGL" : EndIf
 		cmd = cmd + " -framework AppKit"
 	Case PLATFORM_LINUX
-		If linkOpenGL : cmd = cmd + " -lGL" : EndIf
+		If linkOpenGL : cmd = cmd + " -lGL -lX11 -lXxf86vm -lXrandr -lXi" : EndIf
 		cmd = cmd + " -ldl -lm"
 	EndSelect
 	
