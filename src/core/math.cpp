@@ -5,8 +5,6 @@
 #define DEG2RAD 0.0174532925
 #define RAD2DEG 57.2957795
 
-extern "C" {
-
 EXPORT float CALL Pi() {
     return 3.141592f; /*65359f*/
 }
@@ -97,5 +95,3 @@ EXPORT float CALL Wrap(float value, float module) {
     if (module == 0) return value;
     return (float)(value - module*floor(value/module));
 }
-
-} // extern "C"

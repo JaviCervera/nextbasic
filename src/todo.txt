@@ -1,5 +1,5 @@
 V0.5:
-- Improve options of Extern blocks
++ Improve options of Extern blocks
 - Create Geany and TextWrangler language files
 
 V0.6:

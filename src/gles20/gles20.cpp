@@ -4,8 +4,6 @@
 
 using namespace std;
 
-extern "C" {
-
 static GLenum _initStatus;
 
 int _glInit() {
@@ -197,8 +195,8 @@ void _glDrawArrays(int mode, int first, int count) {
 	glDrawArrays(mode, first, count);
 }
 
-void _glDrawElements(int mode, int count, int type, const void* ptr) {
-	glDrawElements(mode, count, type, ptr);
+void _glDrawElements(int mode, int count, int type, int ptr) {
+	glDrawElements(mode, count, type, (const void*)ptr);
 }
 
 void _glEnable(int cap) {
@@ -319,32 +317,32 @@ const char* _glGetString(int name) {
 	return (const char*)glGetString(name);
 }
 
-void _glGetTexParameterfv(int target, int pname, float* params) {
-	glGetTexParameterfv(target, pname, params);
+void _glGetTexParameterfv(int target, int pname, int params) {
+	glGetTexParameterfv(target, pname, (float*)params);
 }
 
-void _glGetTexParameteriv(int target, int pname, int* params) {
-	glGetTexParameteriv(target, pname, params);
+void _glGetTexParameteriv(int target, int pname, int params) {
+	glGetTexParameteriv(target, pname, (int*)params);
 }
 
-void _glGetUniformfv(int program, int location, float* params) {
-	glGetUniformfv(program, location, params);
+void _glGetUniformfv(int program, int location, int params) {
+	glGetUniformfv(program, location, (float*)params);
 }
 
-void _glGetUniformiv(int program, int location, int* params) {
-	glGetUniformiv(program, location, params);
+void _glGetUniformiv(int program, int location, int params) {
+	glGetUniformiv(program, location, (int*)params);
 }
 
 int _glGetUniformLocation(int program, const char* name) {
 	return glGetUniformLocation(program, name);
 }
 
-void _glGetVertexAttribfv(int index, int pname, float* params) {
-	glGetVertexAttribfv(index, pname, params);
+void _glGetVertexAttribfv(int index, int pname, int params) {
+	glGetVertexAttribfv(index, pname, (float*)params);
 }
 
-void _glGetVertexAttribiv(int index, int pname, int* params) {
-	glGetVertexAttribiv(index, pname, params);
+void _glGetVertexAttribiv(int index, int pname, int params) {
+	glGetVertexAttribiv(index, pname, (int*)params);
 }
 
 void _glHint(int target, int mode) {
@@ -395,8 +393,8 @@ void _glPolygonOffset(float factor, float units) {
 	glPolygonOffset(factor, units);
 }
 
-void _glReadPixels(int x, int y, int width, int height, int format, int type, void* pixels) {
-	glReadPixels(x, y, width, height, format, type, pixels);
+void _glReadPixels(int x, int y, int width, int height, int format, int type, int pixels) {
+	glReadPixels(x, y, width, height, format, type, (void*)pixels);
 }
 
 void _glReleaseShaderCompiler() {
@@ -443,12 +441,12 @@ void _glStencilOpSeparate(int face, int fail, int zfail, int zpass) {
 	glStencilOpSeparate(face, fail, zfail, zpass);
 }
 
-void _glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, const void* pixels) {
-	glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+void _glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format, int type, int pixels) {
+	glTexImage2D(target, level, internalformat, width, height, border, format, type, (const void*)pixels);
 }
 
-void _glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, const void* pixels) {
-	glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+void _glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format, int type, int pixels) {
+	glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (const void*)pixels);
 }
 
 void _glTexParameterf(int target, int pname, float param) {
@@ -463,7 +461,7 @@ void _glUniform1f(int location, float x) {
 	glUniform1f(location, x);
 }
 
-void _glUniform1i(int location, float x) {
+void _glUniform1i(int location, int x) {
 	glUniform1i(location, x);
 }
 
@@ -471,7 +469,7 @@ void _glUniform2f(int location, float x, float y) {
 	glUniform2f(location, x, y);
 }
 
-void _glUniform2i(int location, float x, float y) {
+void _glUniform2i(int location, int x, int y) {
 	glUniform2i(location, x, y);
 }
 
@@ -479,7 +477,7 @@ void _glUniform3f(int location, float x, float y, float z) {
 	glUniform3f(location, x, y, z);
 }
 
-void _glUniform3i(int location, float x, float y, float z) {
+void _glUniform3i(int location, int x, int y, int z) {
 	glUniform3i(location, x, y, z);
 }
 
@@ -487,52 +485,52 @@ void _glUniform4f(int location, float x, float y, float z, float w) {
 	glUniform4f(location, x, y, z, w);
 }
 
-void _glUniform4i(int location, float x, float y, float z, float w) {
+void _glUniform4i(int location, int x, int y, int z, int w) {
 	glUniform4i(location, x, y, z, w);
 }
 
-void _glUniform1fv(int location, int count, float* v) {
-	glUniform1fv(location, count, v);
+void _glUniform1fv(int location, int count, int v) {
+	glUniform1fv(location, count, (float*)v);
 }
 
-void _glUniform1iv(int location, int count, int* v) {
-	glUniform1iv(location, count, v);
+void _glUniform1iv(int location, int count, int v) {
+	glUniform1iv(location, count, (int*)v);
 }
 
-void _glUniform2fv(int location, int count, float* v) {
-	glUniform2fv(location, count, v);
+void _glUniform2fv(int location, int count, int v) {
+	glUniform2fv(location, count, (float*)v);
 }
 
-void _glUniform2iv(int location, int count, int* v) {
-	glUniform2iv(location, count, v);
+void _glUniform2iv(int location, int count, int v) {
+	glUniform2iv(location, count, (int*)v);
 }
 
-void _glUniform3fv(int location, int count, float* v) {
-	glUniform3fv(location, count, v);
+void _glUniform3fv(int location, int count, int v) {
+	glUniform3fv(location, count, (float*)v);
 }
 
-void _glUniform3iv(int location, int count, int* v) {
-	glUniform3iv(location, count, v);
+void _glUniform3iv(int location, int count, int v) {
+	glUniform3iv(location, count, (int*)v);
 }
 
-void _glUniform4fv(int location, int count, float* v) {
-	glUniform4fv(location, count, v);
+void _glUniform4fv(int location, int count, int v) {
+	glUniform4fv(location, count, (float*)v);
 }
 
-void _glUniform4iv(int location, int count, int* v) {
-	glUniform4iv(location, count, v);
+void _glUniform4iv(int location, int count, int v) {
+	glUniform4iv(location, count, (int*)v);
 }
 
-void _glUniformMatrix2fv(int location, int count, int transpose, float* value) {
-	glUniformMatrix2fv(location, count, transpose, value);
+void _glUniformMatrix2fv(int location, int count, int transpose, int value) {
+	glUniformMatrix2fv(location, count, transpose, (float*)value);
 }
 
-void _glUniformMatrix3fv(int location, int count, int transpose, float* value) {
-	glUniformMatrix3fv(location, count, transpose, value);
+void _glUniformMatrix3fv(int location, int count, int transpose, int value) {
+	glUniformMatrix3fv(location, count, transpose, (float*)value);
 }
 
-void _glUniformMatrix4fv(int location, int count, int transpose, float* value) {
-	glUniformMatrix4fv(location, count, transpose, value);
+void _glUniformMatrix4fv(int location, int count, int transpose, int value) {
+	glUniformMatrix4fv(location, count, transpose, (float*)value);
 }
 
 void _glUseProgram(int program) {
@@ -559,28 +557,26 @@ void _glVertexAttrib4f(int indx, float x, float y, float z, float w) {
 	glVertexAttrib4f(indx, x, y, z, w);
 }
 
-void _glVertexAttrib1fv(int indx, float *values) {
-	glVertexAttrib1fv(indx, values);
+void _glVertexAttrib1fv(int indx, int values) {
+	glVertexAttrib1fv(indx, (float*)values);
 }
 
-void _glVertexAttrib2fv(int indx, float *values) {
-	glVertexAttrib2fv(indx, values);
+void _glVertexAttrib2fv(int indx, int values) {
+	glVertexAttrib2fv(indx, (float*)values);
 }
 
-void _glVertexAttrib3fv(int indx, float *values) {
-	glVertexAttrib3fv(indx, values);
+void _glVertexAttrib3fv(int indx, int values) {
+	glVertexAttrib3fv(indx, (float*)values);
 }
 
-void _glVertexAttrib4fv(int indx, float *values) {
-	glVertexAttrib4fv(indx, values);
+void _glVertexAttrib4fv(int indx, int values) {
+	glVertexAttrib4fv(indx, (float*)values);
 }
 
-void _glVertexAttribPointer(int indx, int size, int type, int normalized, int stride, const void* data) {
-	glVertexAttribPointer(indx, size, type, normalized, stride, data);
+void _glVertexAttribPointer(int indx, int size, int type, int normalized, int stride, int data) {
+	glVertexAttribPointer(indx, size, type, normalized, stride, (const void*)data);
 }
 
 void _glViewport(int x, int y, int width, int height) {
 	glViewport(x, y, width, height);
 }
-
-} // extern "C"

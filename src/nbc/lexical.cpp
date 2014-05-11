@@ -1,4 +1,5 @@
 #include "lexical.h"
+#include "../core/array.h"
 #include "../core/string.h"
 #include <map>
 
@@ -20,7 +21,7 @@ Lexical::Lexical(const string& filename) {
 	
 	// Fill symbols table
     string spacedSymbols = "<> >= <= > < + - * / = , : . ( ) % # $";
-	Array* arr = SplitString(spacedSymbols, " ");
+	int arr = SplitString(spacedSymbols, " ");
 	for ( int i = 0; i < CountArray(arr); i++ ) {
 		symbols.push_back(ArrayString(arr, i));
 	}

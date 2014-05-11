@@ -3,10 +3,6 @@
 
 #include "../common/defs.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 EXPORT float CALL Pi();
 EXPORT float CALL Floor(float val);
 EXPORT float CALL Ceil(float val);
@@ -28,9 +24,5 @@ EXPORT int CALL Rand(int min, int max);
 EXPORT float CALL FRand(float min, float max);
 EXPORT void CALL SeedRnd(int seed);
 EXPORT float CALL Wrap(float value, float module);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif // MATH_H

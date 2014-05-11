@@ -1,5 +1,6 @@
 #include "cppgenerator.h"
 #include "error.h"
+#include "../core/array.h"
 #include "../core/string.h"
 #include <map>
 #include <iostream>
@@ -51,7 +52,6 @@ void CppGenerator::WriteIncludes() {
 	SaveString("#include <string.h>\n", filename, true);
 	SaveString("#include <string>\n", filename, true);
 	SaveString("#if defined(_WIN32)\n#define CALLCONV __stdcall\n#else\n#define CALLCONV\n#endif\n\n", filename, true);
-	SaveString("extern \"C\" {\n\n", filename, true);
 	SaveString("void __nb_setprogramname__(const char* name);\n", filename, true);
 	SaveString("void __nb_setcommandline__(int num, char* args[]);\n\n", filename, true);
 }
@@ -248,11 +248,17 @@ void CppGenerator::WriteFunction(const Function &func) {
 	string name = func.Name();
 	if ( func.ExternName() != "" ) name = func.ExternName();
 
+	// Linkage type
+	string linkage = "";
+	if ( func.GetLinkage() == Function::C_LINKAGE ) {
+		linkage = "extern \"C\" ";
+	}
+
 	// Name
 	if ( func.IsExtern() )
-		SaveString(ConvertType(func.Type()) + " " + name + "(", filename, true);
+		SaveString(linkage + ConvertType(func.Type()) + " " + name + "(", filename, true);
 	else
-		SaveString(ConvertType(func.Type()) + " nb_" + name + "(", filename, true);
+		SaveString(linkage + ConvertType(func.Type()) + " nb_" + name + "(", filename, true);
 
 	// Set scanner locals
 	vector<Var> locals;
@@ -406,7 +412,7 @@ void CppGenerator::WriteProgram() {
 	SaveString(string("\treturn ") + DefaultInitForType(TypeInt) + ";\n", filename, true);
 
 	// End
-	SaveString("}\n\n} // extern \"C\"\n", filename, true);
+	SaveString("}\n", filename, true);
 }
 
 void CppGenerator::WriteGlobalInit(const Var& global) {
@@ -1252,8 +1258,8 @@ bool CppGenerator::IsEndType(TokenType type) const {
 }
 
 IdType CppGenerator::VarType(const string& var) const {
-	Array* path = SplitString(Replace(var, "->", "."), ".");
-	Array* arr = SplitString(Right(ArrayString(path, 0), ArrayString(path, 0).length() - 3), "[");
+	int path = SplitString(Replace(var, "->", "."), ".");
+	int arr = SplitString(Right(ArrayString(path, 0), ArrayString(path, 0).length() - 3), "[");
 	string varName = ArrayString(arr, 0);
 	FreeArray(arr);
 	const Var* field = NULL;
@@ -1265,7 +1271,7 @@ IdType CppGenerator::VarType(const string& var) const {
 		return (IdType)-1;
 	for ( int i = 1; i < CountArray(path); i++ ) {
 		const Struct& st = scanner.GetStruct(field->Type() - 1 - TypeStruct);
-		Array* arr = SplitString(Right(ArrayString(path, i), ArrayString(path, i).length() - 3), "[");
+		int arr = SplitString(Right(ArrayString(path, i), ArrayString(path, i).length() - 3), "[");
 		varName = ArrayString(arr, 0);  // Remove "nb_" and array access
 		FreeArray(arr);
 		field = st.Field(varName);

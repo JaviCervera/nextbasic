@@ -1,6 +1,6 @@
 $Link "stb_image"
 
-Extern
+Extern "Linkage:C"
 
 Function stbi_load%(filename As pchar, x, y, comp, req_comp)	'x, y, and comp are pointers
 Function stbi_load_from_memory%(buffer, x, y, comp, req_comp)	'All params are pointers

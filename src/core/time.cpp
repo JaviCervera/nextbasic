@@ -6,8 +6,6 @@
 
 using namespace std;
 
-extern "C" {
-
 EXPORT int CALL Millisecs() {
     return plat_Millisecs();
 }
@@ -28,6 +26,4 @@ EXPORT string CALL CurrentTime() {
     time(&timer);
 	struct tm* timeinfo = localtime(&timer);
 	return LSet(Str(timeinfo->tm_hour), 2, "0") + ":" + LSet(Str(timeinfo->tm_min), 2, "0") + ":" + LSet(Str(timeinfo->tm_sec), 2, "0");
-}
-
 }

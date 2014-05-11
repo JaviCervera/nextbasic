@@ -1,84 +1,83 @@
 #include "array.h"
+#include <vector>
+
+typedef std::vector<CollectionValue> Array;
 
 using namespace std;
 
-extern "C" {
-
-EXPORT Array* CALL CreateArray() {
-	return new Array;
+EXPORT int CALL CreateArray() {
+	return int(new Array);
 }
 
-EXPORT void CALL FreeArray(Array* arr) {
-	delete arr;
+EXPORT void CALL FreeArray(int arr) {
+	delete (Array*)arr;
 }
 
-EXPORT int CALL CountArray(Array* arr) {
-	return arr->size();
+EXPORT int CALL CountArray(int arr) {
+	return ((Array*)arr)->size();
 }
 
-EXPORT void CALL ArrayAddInt(Array* arr, int i) {
-	arr->push_back(CollectionValue(i));
+EXPORT void CALL ArrayAddInt(int arr, int i) {
+	((Array*)arr)->push_back(CollectionValue(i));
 }
 
-EXPORT void CALL ArrayAddFloat(Array* arr, float f) {
-	arr->push_back(CollectionValue(f));
+EXPORT void CALL ArrayAddFloat(int arr, float f) {
+	((Array*)arr)->push_back(CollectionValue(f));
 }
 
-EXPORT void CALL ArrayAddString(Array* arr, string s) {
-	arr->push_back(CollectionValue(s));
+EXPORT void CALL ArrayAddString(int arr, string s) {
+	((Array*)arr)->push_back(CollectionValue(s));
 }
 
-EXPORT void CALL ArrayAddObject(Array* arr, void* obj) {
-	arr->push_back(CollectionValue(obj));
+EXPORT void CALL ArrayAddObject(int arr, void* obj) {
+	((Array*)arr)->push_back(CollectionValue(obj));
 }
 
-EXPORT void CALL ArraySetInt(Array* arr, int index, int i) {
-	arr->at(index) = CollectionValue(i);
+EXPORT void CALL ArraySetInt(int arr, int index, int i) {
+	((Array*)arr)->at(index) = CollectionValue(i);
 }
 
-EXPORT void CALL ArraySetFloat(Array* arr, int index, float f) {
-	arr->at(index) = CollectionValue(f);
+EXPORT void CALL ArraySetFloat(int arr, int index, float f) {
+	((Array*)arr)->at(index) = CollectionValue(f);
 }
 
-EXPORT void CALL ArraySetString(Array* arr, int index, string s) {
-	arr->at(index) = CollectionValue(s);
+EXPORT void CALL ArraySetString(int arr, int index, string s) {
+	((Array*)arr)->at(index) = CollectionValue(s);
 }
 
-EXPORT void CALL ArraySetObject(Array* arr, int index, void* obj) {
-	arr->at(index) = CollectionValue(obj);
+EXPORT void CALL ArraySetObject(int arr, int index, void* obj) {
+	((Array*)arr)->at(index) = CollectionValue(obj);
 }
 
-EXPORT int CALL ArrayInt(Array* arr, int index) {
-	return arr->at(index).Int();
+EXPORT int CALL ArrayInt(int arr, int index) {
+	return ((Array*)arr)->at(index).Int();
 }
 
-EXPORT float CALL ArrayFloat(Array* arr, int index) {
-	return arr->at(index).Float();
+EXPORT float CALL ArrayFloat(int arr, int index) {
+	return ((Array*)arr)->at(index).Float();
 }
 
-EXPORT string ArrayString(Array* arr, int index) {
-	return arr->at(index).String();
+EXPORT string ArrayString(int arr, int index) {
+	return ((Array*)arr)->at(index).String();
 }
 
-EXPORT void* CALL ArrayObject(Array* arr, int index) {
-	return arr->at(index).Object();
+EXPORT void* CALL ArrayObject(int arr, int index) {
+	return ((Array*)arr)->at(index).Object();
 }
 
-EXPORT void CALL ArrayRemoveAt(Array* arr, int index) {
-	arr->erase(arr->begin() + index);
+EXPORT void CALL ArrayRemoveAt(int arr, int index) {
+	((Array*)arr)->erase(((Array*)arr)->begin() + index);
 }
 
-EXPORT void CALL ArrayRemoveObject(Array* arr, void* obj) {
-	for ( Array::iterator it = arr->begin(); it != arr->end(); it++ ) {
+EXPORT void CALL ArrayRemoveObject(int arr, void* obj) {
+	for ( Array::iterator it = ((Array*)arr)->begin(); it != ((Array*)arr)->end(); it++ ) {
 		if ( (*it).Object() == obj ) {
-			arr->erase(it);
+			((Array*)arr)->erase(it);
 			break;
 		}
 	}
 }
 
-EXPORT void CALL ClearArray(Array* arr) {
-	arr->clear();
+EXPORT void CALL ClearArray(int arr) {
+	((Array*)arr)->clear();
 }
-
-} // extern "C"

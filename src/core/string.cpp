@@ -1,4 +1,5 @@
 #include "string.h"
+#include "array.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <algorithm>
@@ -8,8 +9,6 @@
 #endif
 
 using namespace std;
-
-extern "C" {
 
 EXPORT string CALL Str(int val) {
 	char str[32];
@@ -183,12 +182,12 @@ EXPORT void CALL SaveString(string str, string filename, int append) {
 	fclose(f);
 }
 
-EXPORT Array* CALL SplitString(string str, string delim) {
+EXPORT int CALL SplitString(string str, string delim) {
 	if ( (str.length() == 0) || (delim[0] == '\0') )
 		return CreateArray();
 
 	// Fill array with strings
-	Array* arr = CreateArray();
+	int arr = CreateArray();
 	string txt = "";
 	for ( unsigned int i = 0; i < str.length(); i++ ) {
 		if ( str[i] == delim[0] ) {
@@ -201,5 +200,3 @@ EXPORT Array* CALL SplitString(string str, string delim) {
 	ArrayAddString(arr, txt);
 	return arr;
 }
-
-} // extern "C"

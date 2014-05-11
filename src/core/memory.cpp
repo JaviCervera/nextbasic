@@ -4,53 +4,51 @@
 
 using namespace std;
 
-extern "C" {
-
-EXPORT void* CALL AllocMem(int size) {
-    return malloc(size);
+EXPORT int CALL AllocMem(int size) {
+	return (int)malloc(size);
 }
 
-EXPORT void CALL FreeMem(void* address) {
-	free(address);
+EXPORT void CALL FreeMem(int address) {
+	free((void*)address);
 }
 
-EXPORT void* CALL ResizeMem(void* address, int size) {
-	return realloc(address, size);
+EXPORT int CALL ResizeMem(int address, int size) {
+	return (int)realloc((void*)address, size);
 }
 
-EXPORT void CALL CopyMem(void* from, void* to, int size) {
-	memcpy(to, from, size);
+EXPORT void CALL CopyMem(int from, int to, int size) {
+	memcpy((void*)to, (const void*)from, size);
 }
 
-EXPORT void CALL SetMem(void* address, int val, int size) {
-	memset(address, val, size);
+EXPORT void CALL SetMem(int address, int val, int size) {
+	memset((void*)address, val, size);
 }
 
-EXPORT int CALL PeekByte(void* address) {
+EXPORT int CALL PeekByte(int address) {
     char c;
-	memcpy(&c, address, sizeof(char));
+	memcpy(&c, (void*)address, sizeof(char));
     return (int)c;
 }
 
-EXPORT int CALL PeekShort(void* address) {
+EXPORT int CALL PeekShort(int address) {
     short s;
-	memcpy(&s, address, sizeof(short));
+	memcpy(&s, (void*)address, sizeof(short));
     return (int)s;
 }
 
-EXPORT int CALL PeekInt(void* address) {
+EXPORT int CALL PeekInt(int address) {
     int i;
-	memcpy(&i, address, sizeof(int));
+	memcpy(&i, (void*)address, sizeof(int));
     return i;
 }
 
-EXPORT float CALL PeekFloat(void* address) {
+EXPORT float CALL PeekFloat(int address) {
     float f;
-	memcpy(&f, address, sizeof(float));
+	memcpy(&f, (void*)address, sizeof(float));
     return f;
 }
 
-EXPORT string CALL PeekString(void* address, int size) {
+EXPORT string CALL PeekString(int address, int size) {
     if ( size > 0 ) {
 		return string((char*)address, size);
     } else {
@@ -58,24 +56,22 @@ EXPORT string CALL PeekString(void* address, int size) {
     }
 }
 
-EXPORT void CALL PokeByte(void* address, int val) {
-	memcpy(address, &val, sizeof(char));
+EXPORT void CALL PokeByte(int address, int val) {
+	memcpy((void*)address, &val, sizeof(char));
 }
 
-EXPORT void CALL PokeShort(void* address, int val) {
-	memcpy(address, &val, sizeof(short));
+EXPORT void CALL PokeShort(int address, int val) {
+	memcpy((void*)address, &val, sizeof(short));
 }
 
-EXPORT void CALL PokeInt(void* address, int val) {
-	memcpy(address, &val, sizeof(int));
+EXPORT void CALL PokeInt(int address, int val) {
+	memcpy((void*)address, &val, sizeof(int));
 }
 
-EXPORT void CALL PokeFloat(void* address, float val) {
-	memcpy(address, &val, sizeof(float));
+EXPORT void CALL PokeFloat(int address, float val) {
+	memcpy((void*)address, &val, sizeof(float));
 }
 
-EXPORT void CALL PokeString(void* address, string val) {
+EXPORT void CALL PokeString(int address, string val) {
 	strcpy((char*)address, val.c_str());
 }
-
-} // extern "C"

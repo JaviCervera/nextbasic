@@ -1,5 +1,4 @@
 $Option Console
-$Include "mac_icon.nb"
 
 Const USAGE_ERROR = -1
 Const FILENAME_ERROR = -2
@@ -72,7 +71,6 @@ Program
 	If PlatformId() = PLATFORM_MAC And isGuiApp
 		Print("Generating application bundle...")
 		
-		InitIcnsData()
 		Dim bundleName$ = StripExt(cppFilename) + ".app"
 		
 		'Create app bundle and subdirs
@@ -84,12 +82,8 @@ Program
         'Copy binary file
         System("mv " + Chr(34) + StripExt(cppFilename) + Chr(34) + " " + Chr(34) + bundleName + "/Contents/MacOS" + Chr(34))
 
-        'Create .icns file
-        Dim fhandle = WriteFile(bundleName + "/Contents/Resources/" + StripDir(StripExt(cppFilename)) + ".icns", False)
-        For i = 0 To icnsSize - 1
-            WriteByte(fhandle, PeekByte(icnsData + i))
-		Next
-        CloseFile(fhandle)
+        'Copy .icns file
+		System("cp default.icns " + Chr(34) + bundleName + "/Contents/Resources/" + StripDir(StripExt(cppFilename)) + ".icns" + Chr(34))
 
         'Create Info.plist
         Dim plist$ = "<?xml version=" + Chr(34) + "1.0" + Chr(34) + " encoding=" + Chr(34) + "UTF-8" + Chr(34) + "?>\n"

@@ -4,30 +4,22 @@
 #include "../common/defs.h"
 #include <string>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-EXPORT void* CALL LoadLibrary(std::string libname);
-EXPORT void CALL FreeLibrary(void* lib);
-EXPORT void* CALL LibraryFunction(void* lib, std::string funcname);
+EXPORT int CALL LoadLibrary(std::string libname);
+EXPORT void CALL FreeLibrary(int lib);
+EXPORT int CALL LibraryFunction(int lib, std::string funcname);
 EXPORT void CALL PushLibraryInt(int val);
 EXPORT void CALL PushLibraryFloat(float val);
 EXPORT void CALL PushLibraryString(std::string str);
-EXPORT void CALL PushLibraryObject(void* obj);
-EXPORT void CALL CallVoidFunction(void* func);
-EXPORT int CALL CallIntFunction(void* func);
-EXPORT float CALL CallFloatFunction(void* func);
-EXPORT std::string CALL CallStringFunction(void* func);
-EXPORT void* CALL CallObjectFunction(void* func);
-EXPORT void CALL CallVoidCFunction(void* func);
-EXPORT int CALL CallIntCFunction(void* func);
-EXPORT float CALL CallFloatCFunction(void* func);
-EXPORT std::string CALL CallStringCFunction(void* func);
-EXPORT void* CALL CallObjectCFunction(void* func);
-
-#ifdef __cplusplus
-}
-#endif
+EXPORT void CALL PushLibraryObject(int obj);
+EXPORT void CALL CallVoidFunction(int func);
+EXPORT int CALL CallIntFunction(int func);
+EXPORT float CALL CallFloatFunction(int func);
+EXPORT std::string CALL CallStringFunction(int func);
+EXPORT int CALL CallObjectFunction(int func);
+EXPORT void CALL CallVoidCFunction(int func);
+EXPORT int CALL CallIntCFunction(int func);
+EXPORT float CALL CallFloatCFunction(int func);
+EXPORT std::string CALL CallStringCFunction(int func);
+EXPORT int CALL CallObjectCFunction(int func);
 
 #endif // LIBRARY_H

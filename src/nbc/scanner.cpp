@@ -1,5 +1,6 @@
 #include "scanner.h"
 #include "error.h"
+#include "../core/array.h"
 #include <iostream>
 
 using namespace std;
@@ -172,14 +173,47 @@ void Scanner::ParseFunctions() {
 
     // Parse whole buffer
     string currentDll = "";
+	Function::Linkage linkage = Function::CPP_LINKAGE;
     while ( stream.HasNext() ) {
         const Token& tok = stream.Next();
-        if ( tok.Type() == TokenExtern ) {
-            if ( stream.Peek().Type() == TokenStringLiteral )
-                currentDll = stream.Next().Data();
-        } else if ( tok.Type() == TokenEndExtern ) {
+
+		// Found Extern block
+		if ( tok.Type() == TokenExtern ) {
+			// Parse extern options
+			if ( stream.Peek().Type() == TokenStringLiteral ) {
+				int options = SplitString(stream.Next().Data(), ",");
+				for ( int i = 0; i < CountArray(options); i++ ) {
+					int option = SplitString(ArrayString(options, i), ":");
+					if ( CountArray(option) != 2 ) {
+						cout << "Malformed extern option '" << ArrayString(options, i).c_str() << "'. Ignoring..." << endl;
+					} else {
+						if ( Lower(ArrayString(option, 0)) == "linkage" ) {
+							if ( Lower(ArrayString(option, 1)) == "c" ) {
+								linkage = Function::C_LINKAGE;
+							} else if ( Lower(ArrayString(option, 1)) == "c++" ) {
+								linkage = Function::CPP_LINKAGE;
+							} else {
+								cout << "Unrecognized linkage type '" << ArrayString(option, 1).c_str() << "'. Ignoring..." << endl;
+							}
+						} else if ( Lower(ArrayString(option, 0)) == "sharedlib" ) {
+							currentDll = ArrayString(option, 1);
+						} else {
+							cout << "Unrecognized extern option '" << ArrayString(option, 0).c_str() << "'. Ignoring..." << endl;
+						}
+					}
+					FreeArray(option);
+				}
+				FreeArray(options);
+			}
+
+		// End of extern block
+		} else if ( tok.Type() == TokenEndExtern ) {
+			// Reset default extern options
             currentDll = "";
-        } else if ( tok.Type() == TokenFunction ) {
+			linkage = Function::CPP_LINKAGE;
+
+		// Found function
+		} else if ( tok.Type() == TokenFunction ) {
             // Name
             const Token& nameToken = stream.Next();
 
@@ -257,6 +291,7 @@ void Scanner::ParseFunctions() {
                 Function func(nameToken.Data(), type, args);
                 func.SetExternName(externName);
                 func.SetLibName(currentDll);
+				func.SetLinkage(linkage);
                 functions.push_back(func);
             }
         }

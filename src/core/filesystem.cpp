@@ -1,4 +1,5 @@
 #include "filesystem.h"
+#include "array.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -17,15 +18,13 @@
 
 using namespace std;
 
-extern "C" {
-
-EXPORT Array* CALL DirContents(std::string path) {
+EXPORT int CALL DirContents(std::string path) {
 	// Open directory
 	DIR* d = (DIR*)opendir(path.c_str());
-	if ( d == NULL ) return NULL;
+	if ( d == NULL ) return 0;
 
 	// Create structure
-	Array* contents = CreateArray();
+	int contents = CreateArray();
 
 	// Copy directory contents
 	struct dirent* entry;
@@ -108,5 +107,3 @@ EXPORT void CALL CopyFile(string filename1, string filename2) {
 EXPORT void CALL DeleteFile(string filename) {
 	remove(filename.c_str());
 }
-
-} // extern "C"

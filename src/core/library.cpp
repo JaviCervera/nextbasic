@@ -2,21 +2,15 @@
 #include "array.h"
 #include "platform.h"
 
-static Array* __nb_libStack__ = 0;
+static int __nb_libStack__ = 0;	// Array with stack variables to use when calling function
 
 #ifdef _WIN32
-#ifdef __TINYC__
-#define CALLCONV
-#else
 #define CALLCONV __stdcall
-#endif
 #else
 #define CALLCONV
 #endif
 
 using namespace std;
-
-extern "C" {
 
 typedef void (CALLCONV *__nb_voidfunc0__)();
 typedef void (CALLCONV *__nb_voidfunc1__)(void*);
@@ -875,16 +869,16 @@ static void __nb_InitLibraryStack__() {
     }
 }
 
-EXPORT void* CALL LoadLibrary(string libname) {
-	return plat_LoadLibrary(libname);
+EXPORT int CALL LoadLibrary(string libname) {
+	return (int)plat_LoadLibrary(libname);
 }
 
-EXPORT void CALL FreeLibrary(void* lib) {
-    plat_FreeLibrary(lib);
+EXPORT void CALL FreeLibrary(int lib) {
+	plat_FreeLibrary((void*)lib);
 }
 
-EXPORT void* CALL LibraryFunction(void* lib, string funcname) {
-	return plat_LibraryFunction(lib, funcname);
+EXPORT int CALL LibraryFunction(int lib, string funcname) {
+	return (int)plat_LibraryFunction((void*)lib, funcname);
 }
 
 EXPORT void CALL PushLibraryInt(int val) {
@@ -902,12 +896,12 @@ EXPORT void CALL PushLibraryString(string str) {
     ArrayAddString(__nb_libStack__, str);
 }
 
-EXPORT void CALL PushLibraryObject(void* obj) {
+EXPORT void CALL PushLibraryObject(int obj) {
     __nb_InitLibraryStack__();
-    ArrayAddObject(__nb_libStack__, obj);
+	ArrayAddObject(__nb_libStack__, (void*)obj);
 }
 
-EXPORT void CALL CallVoidFunction(void* func) {
+EXPORT void CALL CallVoidFunction(int func) {
     int i;
     void* p[16];
 
@@ -976,7 +970,7 @@ EXPORT void CALL CallVoidFunction(void* func) {
     ClearArray(__nb_libStack__);
 }
 
-EXPORT int CALL CallIntFunction(void* func) {
+EXPORT int CALL CallIntFunction(int func) {
     int i;
     void* p[16];
 	int ret = 0;
@@ -1048,7 +1042,7 @@ EXPORT int CALL CallIntFunction(void* func) {
     return ret;
 }
 
-EXPORT float CALL CallFloatFunction(void* func) {
+EXPORT float CALL CallFloatFunction(int func) {
     int i;
     void* p[16];
 	float ret = 0.0f;
@@ -1120,7 +1114,7 @@ EXPORT float CALL CallFloatFunction(void* func) {
     return ret;
 }
 
-EXPORT string CALL CallStringFunction(void* func) {
+EXPORT string CALL CallStringFunction(int func) {
     int i;
     void* p[16];
 	char* ret = '\0';
@@ -1192,7 +1186,7 @@ EXPORT string CALL CallStringFunction(void* func) {
 	return string(ret);
 }
 
-EXPORT void* CALL CallObjectFunction(void* func) {
+EXPORT int CALL CallObjectFunction(int func) {
     int i;
     void* p[16];
 	void* ret = NULL;
@@ -1261,35 +1255,10 @@ EXPORT void* CALL CallObjectFunction(void* func) {
     // Clear library stack
     ClearArray(__nb_libStack__);
 
-    return ret;
+	return (int)ret;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-EXPORT void CALL CallVoidCFunction(void* func) {
+EXPORT void CALL CallVoidCFunction(int func) {
     int i;
     void* p[16];
 
@@ -1358,7 +1327,7 @@ EXPORT void CALL CallVoidCFunction(void* func) {
     ClearArray(__nb_libStack__);
 }
 
-EXPORT int CALL CallIntCFunction(void* func) {
+EXPORT int CALL CallIntCFunction(int func) {
     int i;
     void* p[16];
 	int ret = 0;
@@ -1430,7 +1399,7 @@ EXPORT int CALL CallIntCFunction(void* func) {
     return ret;
 }
 
-EXPORT float CALL CallFloatCFunction(void* func) {
+EXPORT float CALL CallFloatCFunction(int func) {
     int i;
     void* p[16];
 	float ret = 0.0f;
@@ -1502,7 +1471,7 @@ EXPORT float CALL CallFloatCFunction(void* func) {
     return ret;
 }
 
-EXPORT string CALL CallStringCFunction(void* func) {
+EXPORT string CALL CallStringCFunction(int func) {
     int i;
     void* p[16];
 	char* ret = '\0';
@@ -1574,7 +1543,7 @@ EXPORT string CALL CallStringCFunction(void* func) {
 	return string(ret);
 }
 
-EXPORT void* CALL CallObjectCFunction(void* func) {
+EXPORT int CALL CallObjectCFunction(int func) {
     int i;
     void* p[16];
 	void* ret = NULL;
@@ -1643,7 +1612,5 @@ EXPORT void* CALL CallObjectCFunction(void* func) {
     // Clear library stack
     ClearArray(__nb_libStack__);
 
-    return ret;
+	return (int)ret;
 }
-
-} // extern "C"

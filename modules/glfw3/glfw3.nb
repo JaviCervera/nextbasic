@@ -235,7 +235,7 @@ Struct GLFWgammaramp
 	Dim size
 EndStruct
 
-Extern
+Extern "Linkage:C"
 
 'Main
 Function glfwInit%() "_glfwInit"

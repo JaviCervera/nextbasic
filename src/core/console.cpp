@@ -3,8 +3,6 @@
 
 using namespace std;
 
-extern "C" {
-
 EXPORT void CALL Print(string str) {
 	printf("%s\n", str.c_str());
 }
@@ -19,5 +17,3 @@ EXPORT string CALL Input(string prompt) {
     fgets(buffer, 1024, stdin);
 	return string(buffer);
 }
-
-} // extern "C"

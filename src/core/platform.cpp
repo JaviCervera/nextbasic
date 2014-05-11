@@ -21,8 +21,6 @@
 
 using namespace std;
 
-extern "C" {
-
 #ifndef _WIN32
 static string __nb_stripmangling__(const string& str) {
     Array* arr = SplitString(str, "@");
@@ -95,5 +93,3 @@ void* plat_LibraryFunction(void* lib, const string& funcname) {
 	return dlsym(lib, __nb_stripmangling__(funcname).c_str());
 #endif
 }
-
-} // extern "C"

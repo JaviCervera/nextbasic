@@ -2,12 +2,7 @@
 #define STRING_H
 
 #include "../common/defs.h"
-#include "array.h"
 #include <string>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 EXPORT std::string CALL Str(int val);
 EXPORT std::string CALL StrF(float val);
@@ -36,10 +31,6 @@ EXPORT std::string CALL ExtractDir(std::string filename);
 EXPORT std::string CALL RealPath(std::string filename);
 EXPORT std::string CALL LoadString(std::string filename);
 EXPORT void CALL SaveString(std::string str, std::string filename, int append);
-EXPORT Array* CALL SplitString(std::string str, std::string delim);
-
-#ifdef __cplusplus
-}
-#endif
+EXPORT int CALL SplitString(std::string str, std::string delim); // Returns an Array*
 
 #endif // STRING_H

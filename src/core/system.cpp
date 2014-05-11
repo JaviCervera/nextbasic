@@ -1,4 +1,5 @@
 #include "system.h"
+#include "array.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,9 +11,7 @@
 using namespace std;
 
 static string programName;
-static Array* clArguments = CreateArray();
-
-extern "C" {
+static int clArguments = CreateArray();
 
 EXPORT int CALL PlatformId() {
 #if defined(_WIN32)
@@ -30,7 +29,7 @@ EXPORT string CALL ProgramName() {
 	return programName;
 }
 
-EXPORT Array* CALL CommandLine() {
+EXPORT int CALL CommandLine() {
     return clArguments;
 }
 
@@ -75,5 +74,3 @@ void __nb_setcommandline__(int num, char* args[]) {
 	for ( int i = 0; i < num; i++ )
         ArrayAddString(clArguments, string(args[i]));
 }
-
-} // extern "C"

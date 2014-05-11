@@ -42,7 +42,12 @@ private:
 
 class Function {
 public:
-    Function(const std::string& name, IdType type, const std::vector<Var>& args) : name(name), type(type), numArgs(args.size()), offset(-1), libName("") { SetLocals(args); }
+	enum Linkage {
+		C_LINKAGE,
+		CPP_LINKAGE
+	};
+
+	Function(const std::string& name, IdType type, const std::vector<Var>& args) : name(name), type(type), numArgs(args.size()), offset(-1), libName(""), linkage(CPP_LINKAGE) { SetLocals(args); }
     const std::string& Name() const { return name; }
     IdType Type() const { return type; }
     int NumArgs() const { return numArgs; }
@@ -59,6 +64,8 @@ public:
     const std::string& ExternName() const { return externName; }
     void SetLibName(const std::string& name) { libName = name; }
     const std::string& LibName() const { return libName; }
+	void SetLinkage(Linkage l) { linkage = l; }
+	Linkage GetLinkage() const { return linkage; }
 private:
     std::string name;
     IdType type;
@@ -67,6 +74,7 @@ private:
     int offset;
     std::string externName;
     std::string libName;
+	Linkage linkage;
 };
 
 class Program {
