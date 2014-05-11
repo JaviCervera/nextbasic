@@ -7,6 +7,17 @@
 *.o
 *.obj
 
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
 # Executables
 *.exe
 *.out
@@ -30,3 +41,7 @@ Makefile*
 # QtCreator
 
 *.autosave
+
+# Exceptions
+
+!modules/glfw3/libglfw3.*.a
