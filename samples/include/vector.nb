@@ -1,0 +1,54 @@
+Struct Vector
+	Dim x#
+	Dim y#
+	Dim z#
+EndStruct
+
+Function CreateVector(x#, y#, z#) As Vector
+	Dim v As Vector = New Vector
+	SetVector(v, x, y, z)
+	Return v
+EndFunction
+
+Function CopyVector(v As Vector) As Vector
+	Return CreateVector(v.x, v.y, v.x)
+EndFunction
+
+Function SetVector(v As Vector, x#, y#, z#)
+	v.x = x
+	v.y = y
+	v.z = z
+EndFunction
+
+Function SumVectors(v1 As Vector, v2 As Vector) As Vector
+	Return CreateVector(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z)
+EndFunction
+
+Function SubVectors(v1 As Vector, v2 As Vector) As Vector
+	Return CreateVector(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z)
+EndFunction
+
+Function MulVectors(v1 As Vector, v2 As Vector) As Vector
+	Return CreateVector(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z)
+EndFunction
+
+Function DivVectors(v1 As Vector, v2 As Vector) As Vector
+	Return CreateVector(v1.x / v2.x, v1.y / v2.y, v1.z / v2.z)
+EndFunction
+
+Function VectorLength#(v As Vector)
+	Return Sqr(v.x*v.x + v.y*v.y + v.z*v.z)
+EndFunction
+
+Function NormalizedVector(v As Vector) As Vector
+	Dim invLength# = 1 / VectorLength(v)
+	Return CreateVector(v.x * invLength, v.y * invLength, v.z * invLength)
+EndFunction
+
+Function VectorDot#(v1 As Vector, v2 As Vector)
+	Return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z
+EndFunction
+
+Function VectorCross(v1 As Vector, v2 As Vector) As Vector
+	Return CreateVector(v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1.x*v2.z, v1.x*v2.y - v1.y*v2.x)
+EndFunction

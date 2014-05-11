@@ -1,0 +1,16 @@
+Struct RotAxis
+	Dim angle#
+	Dim x#
+	Dim y#
+	Dim z#
+EndStruct
+
+Function CreateRotAxis(angle#, x#, y#, z#) As RotAxis
+	Dim ra As RotAxis = New RotAxis
+	ra.angle = angle
+	ra.axis = New Vector3
+	ra.x = x
+	ra.y = y
+	ra.z = z
+	Return ra
+EndFunction

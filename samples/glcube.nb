@@ -1,0 +1,141 @@
+$Option Gui
+$Use gles20
+$Use glfw3
+$Use stb_image
+$Include "include/matrix.nb"
+
+Const SCREEN_WIDTH = 640
+Const SCREEN_HEIGHT = 480
+
+Dim numIndices
+Dim proj As Matrix = CreateMatrix()
+
+Program
+	'Init GLFW and create window
+	glfwInit()
+	glfwWindowHint(GLFW_SAMPLES, 2)
+	Dim win = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "NextBasic with OpenGL ES 2", 0, 0)
+	glfwSetWindowSizeCallback(win, WindowResized)
+	glfwMakeContextCurrent(win)
+	
+	'Init GL
+	glInit()
+	glEnable(GL_DEPTH_TEST)
+	
+	'Create VBOs
+	Dim lines = SplitString(Replace(Replace(LoadString("data/glcube.data"), "\r\n", "\n"), "\r", "\n"), "\n")
+	Dim indicesArr = SplitString(ArrayString(lines, 0), ",")
+	Dim verticesArr = SplitString(ArrayString(lines, 1), ",")
+	Dim texcoordsArr = SplitString(ArrayString(lines, 2), ",")
+	Dim indices = AllocMem(CountArray(indicesArr)*2)
+	Dim vertices = AllocMem((CountArray(verticesArr) + CountArray(texcoordsArr))*4)
+	For Dim i = 0 To CountArray(indicesArr) - 1
+		PokeShort(indices + i*2, Val(ArrayString(indicesArr, i)))
+	Next
+	For i = 0 To CountArray(verticesArr) - 1
+		PokeFloat(vertices + i*4, ValF(ArrayString(verticesArr, i)))
+	Next
+	For i = 0 To CountArray(texcoordsArr) - 1
+		PokeFloat(vertices + (CountArray(verticesArr) + i)*4, ValF(ArrayString(texcoordsArr, i)))
+	Next
+	Dim vbo = glCreateBuffer()
+	Dim ibo = glCreateBuffer()
+	glBindBuffer(GL_ARRAY_BUFFER, vbo)
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo)
+	glBufferData(GL_ARRAY_BUFFER, (CountArray(verticesArr) + CountArray(texcoordsArr))*4, vertices, GL_DYNAMIC_DRAW)
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, CountArray(indicesArr)*2, indices, GL_STATIC_DRAW)
+	numIndices = CountArray(indicesArr)
+	Dim texOffset = CountArray(verticesArr)*4
+	FreeArray(lines)
+	FreeArray(indicesArr)
+	FreeArray(verticesArr)
+	FreeArray(texcoordsArr)
+	FreeMem(indices)
+	FreeMem(vertices)
+	
+	'Create and compile shaders
+	Dim buf = AllocMem(4)
+	Dim v = glCreateShader(GL_VERTEX_SHADER)
+	Dim f = glCreateShader(GL_FRAGMENT_SHADER)
+	glShaderSource(v, LoadString("data/vertex.glsl"))
+	glShaderSource(f, LoadString("data/fragment.glsl"))
+	glCompileShader(v)
+	glCompileShader(f)
+	glGetShaderiv(v, GL_COMPILE_STATUS, buf)
+	If PeekInt(buf) <> GL_TRUE : Print(glGetShaderInfoLog(v)) : EndIf
+	glGetShaderiv(f, GL_COMPILE_STATUS, buf)
+	If PeekInt(buf) <> GL_TRUE : Print(glGetShaderInfoLog(f)) : EndIf
+		
+	'Create and activate program
+	Dim p = glCreateProgram()
+	glAttachShader(p, v)
+	glAttachShader(p, f)
+	glLinkProgram(p)
+	glGetProgramiv(p, GL_LINK_STATUS, buf)
+	If PeekInt(buf) <> GL_TRUE : Print(glGetProgramInfoLog(p)) : EndIf
+	glDeleteShader(v)
+	glDeleteShader(f)
+	glUseProgram(p)
+	FreeMem(buf)
+	
+	'Get location of shader vars, write uniform values, and setup vertex attribs
+	Dim mvpLoc = glGetUniformLocation(p, "MVP")
+	Dim texSamplerLoc = glGetUniformLocation(p, "texSampler")
+	Dim vposLoc = glGetAttribLocation(p, "vpos")
+	Dim vtexLoc = glGetAttribLocation(p, "vtex")
+	glUniform1i(texSamplerLoc, 0)
+	glEnableVertexAttribArray(vposLoc)
+	glEnableVertexAttribArray(vtexLoc)
+	glVertexAttribPointer(vposLoc, 3, GL_FLOAT, False, 0, 0)
+	glVertexAttribPointer(vtexLoc, 2, GL_FLOAT, False, 0, texOffset)
+	
+	'Load texture
+	Dim imgData = AllocMem(12)
+	Dim img = stbi_load("data/box_front.png", imgData, imgData+4, imgData+8, 4)
+	Dim tex = glCreateTexture()
+	glBindTexture(GL_TEXTURE_2D, tex)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, PeekInt(imgData), PeekInt(imgData+4), 0, GL_RGBA, GL_UNSIGNED_BYTE, img)
+	glGenerateMipmap(GL_TEXTURE_2D)
+	FreeMem(imgData)
+	stbi_image_free(img)
+	
+	'Set matrices
+	Dim model As Matrix = CreateMatrix()
+	Dim view As Matrix = CreateMatrix()
+	SetMatrixPerspective(proj, 45, SCREEN_WIDTH*1.0 / SCREEN_HEIGHT, 1, 1000)
+	MatrixLookAt(view, 0,1,3, 0,0,0, 0,1,0)
+	
+	'Main loop
+	While Not glfwWindowShouldClose(win)
+		If glfwGetKey(win, GLFW_KEY_ESCAPE) : glfwSetWindowShouldClose(win, True) : EndIf
+	
+		'Rotate model
+		RotateMatrix(model, 1, 0, 1, 0)
+	
+		'Set MVP
+		Dim mv As Matrix = MulMatrices(view, model)
+		Dim mvp As Matrix = MulMatrices(proj, mv)
+		glUniformMatrix4fv(mvpLoc, 1, False, mvp.m)
+		FreeMatrix(mv)
+		FreeMatrix(mvp)
+	
+		'Draw
+		glClear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT)
+		glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_SHORT, 0)
+	
+		'Refresh
+		glfwSwapBuffers(win)
+		glfwPollEvents()
+	EndWhile
+	
+	'Terminate GLFW
+	glfwTerminate()
+EndProgram
+
+Function WindowResized(win, x, y)
+	SetIdentityMatrix(proj)
+	SetMatrixPerspective(proj, 45, x*1.0/y, 1, 1000)
+	glViewport(0, 0, x, y)
+EndFunction

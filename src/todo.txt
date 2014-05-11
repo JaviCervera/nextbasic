@@ -1,0 +1,34 @@
+V0.5:
+- Improve options of Extern blocks
+- Create Geany and TextWrangler language files
+
+V0.6:
+- Create Lua module
+- Add SDL2, SDL2_mixer... modules
+- Add INI parser
+- Add JSON parser
+- Add XML parser
+
+V0.7:
+- Create Gui module based on LCL
+
+V0.8:
+- Add Android and iOS targets
+
+V1.0:
+- Add doc generator
+- Add documentation
+- Add examples
+- Add unit tests
+
+V1.0+:
+- IDE written in NextBasic
+- Fix bundled app path in Snow Leopard
+- Add "." as operator in parser (do not use the ParseVarAccess crap anymore)
+- Copy shared libraries with executable
+- Add StaticLib, SharedLib to $Option directive (static and shared lib generation support)
+- Add $If, $ElseIf, $Else, $EndIf, with directives: Windows, Mac, Linux, iOS, Android, Phone, Tablet
+- Rewrite compiler in NextBasic?
+- Add unicode support
+- Add multithreading
+- Add debugger

@@ -1,0 +1,202 @@
+$Include "vector.nb"
+
+Struct Matrix
+	Dim m	'Memory buffer
+EndStruct
+
+Function CreateMatrix() As Matrix
+	Dim m As Matrix = New Matrix
+	m.m = AllocMem(16*4)
+	SetIdentityMatrix(m)
+	Return m
+EndFunction
+
+Function FreeMatrix(m As Matrix)
+	FreeMem(m.m)
+	Delete m
+EndFunction
+
+Function MulMatrices(m1 As Matrix, m2 As Matrix) As Matrix
+	Dim mat As Matrix = CreateMatrix()
+	For Dim i = 0 To 3
+		Dim a0# = PeekFloat(m1.m + i*4)
+		Dim a1# = PeekFloat(m1.m + (i+4)*4)
+		Dim a2# = PeekFloat(m1.m + (i+8)*4)
+		Dim a3# = PeekFloat(m1.m + (i+12)*4)
+		PokeFloat(mat.m + i*4, a0*PeekFloat(m2.m) + a1*PeekFloat(m2.m + 1*4) + a2*PeekFloat(m2.m + 2*4) + a3*PeekFloat(m2.m + 3*4))
+		PokeFloat(mat.m + (i+4)*4, a0*PeekFloat(m2.m + 4*4) + a1*PeekFloat(m2.m + 5*4) + a2*PeekFloat(m2.m + 6*4) + a3*PeekFloat(m2.m + 7*4))
+		PokeFloat(mat.m + (i+8)*4, a0*PeekFloat(m2.m + 8*4) + a1*PeekFloat(m2.m + 9*4) + a2*PeekFloat(m2.m + 10*4) + a3*PeekFloat(m2.m + 11*4))
+		PokeFloat(mat.m + (i+12)*4, a0*PeekFloat(m2.m + 12*4) + a1*PeekFloat(m2.m + 13*4) + a2*PeekFloat(m2.m + 14*4) + a3*PeekFloat(m2.m + 15*4))
+	Next
+	Return mat
+EndFunction
+
+Function SetIdentityMatrix(m As Matrix)
+	SetMem(m.m, 0, 16*4)
+	PokeFloat(m.m, 1)
+	PokeFloat(m.m + 5*4, 1)
+	PokeFloat(m.m + 10*4, 1)
+	PokeFloat(m.m + 15*4, 1)
+EndFunction
+
+Function MatrixElement#(m As Matrix, row, column)
+	Return PeekFloat(m.m + (column*4 + row)*4)
+EndFunction
+
+Function SetMatrixElement(m As Matrix, row, column, value#)
+	PokeFloat(m.m + (column*4 + row)*4, value)
+EndFunction
+
+Function SetMatrixTranslation(m As Matrix, x#, y#, z#)
+	PokeFloat(m.m + 12*4, x)
+	PokeFloat(m.m + 13*4, y)
+	PokeFloat(m.m + 14*4, z)
+EndFunction
+
+Function SetMatrixRotation(m As Matrix, angle#, x#, y#, z#)
+	Dim c# = Cos(angle)
+	Dim s# = Sin(angle)
+	Dim xx# = x*x
+	Dim xy# = x*y
+	Dim xz# = x*z
+	Dim yy# = y*y
+	Dim yz# = y*z
+	Dim zz# = z*z
+
+	PokeFloat(m.m + 0, xx * (1 - c) + c)
+	PokeFloat(m.m + 1*4, xy * (1 - c) + z * s)
+	PokeFloat(m.m + 2*4, xz * (1 - c) - y * s)
+	PokeFloat(m.m + 4*4, xy * (1 - c) - z * s)
+	PokeFloat(m.m + 5*4, yy * (1 - c) + c)
+	PokeFloat(m.m + 6*4, yz * (1 - c) + x * s)
+	PokeFloat(m.m + 8*4, xz * (1 - c) + y * s)
+	PokeFloat(m.m + 9*4, yz * (1 - c) - x * s)
+	PokeFloat(m.m + 10*4, zz * (1 - c) + c)
+EndFunction
+
+Function SetMatrixScale(m As Matrix, x#, y#, z#)
+	PokeFloat(m.m, x)
+	PokeFloat(m.m + 5*4, y)
+	PokeFloat(m.m + 10*4, z)
+EndFunction
+
+Function TranslateMatrix(m As Matrix, x#, y#, z#)
+	Dim tm As Matrix = CreateMatrix() : SetMatrixTranslation(tm, x, y, z)
+	Dim om As Matrix = MulMatrices(m, tm)
+	CopyMem(om.m, m.m, 16*4)
+	FreeMatrix(tm)
+	FreeMatrix(om)
+EndFunction
+
+Function RotateMatrix(m As Matrix, angle#, x#, y#, z#)
+	Dim rm As Matrix = CreateMatrix() : SetMatrixRotation(rm, angle, x, y, z)
+	Dim om As Matrix = MulMatrices(m, rm)
+	CopyMem(om.m, m.m, 16*4)
+	FreeMatrix(rm)
+	FreeMatrix(om)
+EndFunction
+
+Function ScaleMatrix(m As Matrix, x#, y#, z#)
+	Dim sm As Matrix = CreateMatrix() : SetMatrixScale(sm, x, y, z)
+	Dim om As Matrix = MulMatrices(m, sm)
+	CopyMem(om.m, m.m, 16*4)
+	FreeMatrix(sm)
+	FreeMatrix(om)
+EndFunction
+
+Function TransposedMatrix(m As Matrix) As Matrix
+	Dim mat As Matrix = CreateMatrix()
+	For Dim i = 0 To 3
+		For Dim j = 0 To 3
+			SetMatrixElement(mat, i, j, MatrixElement(m, j, i))
+		Next
+	Next
+	return mat
+EndFunction
+
+Function InverseMatrix(m As Matrix) As Matrix
+	Dim inv As Matrix = CreateMatrix()
+    PokeFloat(inv.m, PeekFloat(m.m+5*4) * PeekFloat(m.m+10*4) * PeekFloat(m.m+15*4) - PeekFloat(m.m+5*4) * PeekFloat(m.m+11*4) * PeekFloat(m.m+14*4) - PeekFloat(m.m+9*4) * PeekFloat(m.m+6*4) * PeekFloat(m.m+15*4) + PeekFloat(m.m+9*4) * PeekFloat(m.m+7*4) * PeekFloat(m.m+14*4) + PeekFloat(m.m+13*4) * PeekFloat(m.m+6*4) * PeekFloat(m.m+11*4) - PeekFloat(m.m+13*4) * PeekFloat(m.m+7*4) * PeekFloat(m.m+10*4))
+    PokeFloat(inv.m + 4*4, -PeekFloat(m.m+4*4) * PeekFloat(m.m+10*4) * PeekFloat(m.m+15*4) + PeekFloat(m.m+4*4) * PeekFloat(m.m+11*4) * PeekFloat(m.m+14*4) + PeekFloat(m.m+8*4) * PeekFloat(m.m+6*4) * PeekFloat(m.m+15*4) - PeekFloat(m.m+8*4) * PeekFloat(m.m+7*4) * PeekFloat(m.m+14*4) - PeekFloat(m.m+12*4) * PeekFloat(m.m+6*4) * PeekFloat(m.m+11*4) + PeekFloat(m.m+12*4) * PeekFloat(m.m+7*4) * PeekFloat(m.m+10*4))
+    PokeFloat(inv.m + 8*4,  PeekFloat(m.m+4*4) * PeekFloat(m.m+9*4) * PeekFloat(m.m+15*4) - PeekFloat(m.m+4*4) * PeekFloat(m.m+11*4) * PeekFloat(m.m+13*4) - PeekFloat(m.m+8*4) * PeekFloat(m.m+5*4) * PeekFloat(m.m+15*4) + PeekFloat(m.m+8*4) * PeekFloat(m.m+7*4) * PeekFloat(m.m+13*4) + PeekFloat(m.m+12*4) * PeekFloat(m.m+5*4) * PeekFloat(m.m+11*4) - PeekFloat(m.m+12*4) * PeekFloat(m.m+7*4) * PeekFloat(m.m+ 9*4))
+    PokeFloat(inv.m + 12*4, -PeekFloat(m.m+4*4) * PeekFloat(m.m+9*4) * PeekFloat(m.m+14*4) + PeekFloat(m.m+4*4) * PeekFloat(m.m+10*4) * PeekFloat(m.m+13*4) + PeekFloat(m.m+8*4) * PeekFloat(m.m+5*4) * PeekFloat(m.m+14*4) - PeekFloat(m.m+8*4) * PeekFloat(m.m+6*4) * PeekFloat(m.m+13*4) - PeekFloat(m.m+12*4) * PeekFloat(m.m+5*4) * PeekFloat(m.m+10*4) + PeekFloat(m.m+12*4) * PeekFloat(m.m+6*4) * PeekFloat(m.m+ 9*4))
+    PokeFloat(inv.m + 1*4, -PeekFloat(m.m+1*4) * PeekFloat(m.m+10*4) * PeekFloat(m.m+15*4) + PeekFloat(m.m+1*4) * PeekFloat(m.m+11*4) * PeekFloat(m.m+14*4) + PeekFloat(m.m+9*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+15*4) - PeekFloat(m.m+9*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+14*4) - PeekFloat(m.m+13*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+11*4) + PeekFloat(m.m+13*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+10*4))
+    PokeFloat(inv.m + 5*4, PeekFloat(m.m+0*4) * PeekFloat(m.m+10*4) * PeekFloat(m.m+15*4) - PeekFloat(m.m+0*4) * PeekFloat(m.m+11*4) * PeekFloat(m.m+14*4) - PeekFloat(m.m+8*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+15*4) + PeekFloat(m.m+8*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+14*4) + PeekFloat(m.m+12*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+11*4) - PeekFloat(m.m+12*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+10*4))
+    PokeFloat(inv.m + 9*4, -PeekFloat(m.m+0*4) * PeekFloat(m.m+9*4) * PeekFloat(m.m+15*4) + PeekFloat(m.m+0*4) * PeekFloat(m.m+11*4) * PeekFloat(m.m+13*4) + PeekFloat(m.m+8*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+15*4) - PeekFloat(m.m+8*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+13*4) - PeekFloat(m.m+12*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+11*4) + PeekFloat(m.m+12*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+ 9*4))
+    PokeFloat(inv.m + 13*4, PeekFloat(m.m+0*4) * PeekFloat(m.m+9*4) * PeekFloat(m.m+14*4) - PeekFloat(m.m+0*4) * PeekFloat(m.m+10*4) * PeekFloat(m.m+13*4) - PeekFloat(m.m+8*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+14*4) + PeekFloat(m.m+8*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+13*4) + PeekFloat(m.m+12*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+10*4) - PeekFloat(m.m+12*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+ 9*4))
+    PokeFloat(inv.m + 2*4, PeekFloat(m.m+1*4) * PeekFloat(m.m+6*4) * PeekFloat(m.m+15*4) - PeekFloat(m.m+1*4) * PeekFloat(m.m+ 7*4) * PeekFloat(m.m+14*4) - PeekFloat(m.m+5*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+15*4) + PeekFloat(m.m+5*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+14*4) + PeekFloat(m.m+13*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+ 7*4) - PeekFloat(m.m+13*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+ 6*4))
+    PokeFloat(inv.m + 6*4, -PeekFloat(m.m+0*4) * PeekFloat(m.m+6*4) * PeekFloat(m.m+15*4) + PeekFloat(m.m+0*4) * PeekFloat(m.m+ 7*4) * PeekFloat(m.m+14*4) + PeekFloat(m.m+4*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+15*4) - PeekFloat(m.m+4*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+14*4) - PeekFloat(m.m+12*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+ 7*4) + PeekFloat(m.m+12*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+ 6*4))
+    PokeFloat(inv.m + 10*4, PeekFloat(m.m+0*4) * PeekFloat(m.m+5*4) * PeekFloat(m.m+15*4) - PeekFloat(m.m+0*4) * PeekFloat(m.m+ 7*4) * PeekFloat(m.m+13*4) - PeekFloat(m.m+4*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+15*4) + PeekFloat(m.m+4*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+13*4) + PeekFloat(m.m+12*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+ 7*4) - PeekFloat(m.m+12*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+ 5*4))
+    PokeFloat(inv.m + 14*4, -PeekFloat(m.m+0*4) * PeekFloat(m.m+5*4) * PeekFloat(m.m+14*4) + PeekFloat(m.m+0*4) * PeekFloat(m.m+ 6*4) * PeekFloat(m.m+13*4) + PeekFloat(m.m+4*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+14*4) - PeekFloat(m.m+4*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+13*4) - PeekFloat(m.m+12*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+ 6*4) + PeekFloat(m.m+12*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+ 5*4))
+    PokeFloat(inv.m + 3*4, -PeekFloat(m.m+1*4) * PeekFloat(m.m+6*4) * PeekFloat(m.m+11*4) + PeekFloat(m.m+1*4) * PeekFloat(m.m+ 7*4) * PeekFloat(m.m+10*4) + PeekFloat(m.m+5*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+11*4) - PeekFloat(m.m+5*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+10*4) - PeekFloat(m.m+ 9*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+ 7*4) + PeekFloat(m.m+ 9*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+ 6*4))
+    PokeFloat(inv.m + 7*4, PeekFloat(m.m+0*4) * PeekFloat(m.m+6*4) * PeekFloat(m.m+11*4) - PeekFloat(m.m+0*4) * PeekFloat(m.m+ 7*4) * PeekFloat(m.m+10*4) - PeekFloat(m.m+4*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+11*4) + PeekFloat(m.m+4*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+10*4) + PeekFloat(m.m+ 8*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+ 7*4) - PeekFloat(m.m+ 8*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+ 6*4))
+    PokeFloat(inv.m + 11*4, -PeekFloat(m.m+0*4) * PeekFloat(m.m+5*4) * PeekFloat(m.m+11*4) + PeekFloat(m.m+0*4) * PeekFloat(m.m+ 7*4) * PeekFloat(m.m+ 9*4) + PeekFloat(m.m+4*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+11*4) - PeekFloat(m.m+4*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+ 9*4) - PeekFloat(m.m+ 8*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+ 7*4) + PeekFloat(m.m+ 8*4) * PeekFloat(m.m+3*4) * PeekFloat(m.m+ 5*4))
+    PokeFloat(inv.m + 15*4, PeekFloat(m.m+0*4) * PeekFloat(m.m+5*4) * PeekFloat(m.m+10*4) - PeekFloat(m.m+0*4) * PeekFloat(m.m+ 6*4) * PeekFloat(m.m+ 9*4) - PeekFloat(m.m+4*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+10*4) + PeekFloat(m.m+4*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+ 9*4) + PeekFloat(m.m+ 8*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+ 6*4) - PeekFloat(m.m+ 8*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+ 5*4))
+ 
+    Dim det# = PeekFloat(m.m)*PeekFloat(inv.m) + PeekFloat(m.m + 1*4)*PeekFloat(inv.m + 4*4) + PeekFloat(m.m + 2*4)*PeekFloat(inv.m + 8*4) + PeekFloat(m.m + 3*4)*PeekFloat(inv.m + 12*4)
+	if FAbs(det) <= 0.00001
+		FreeMatrix(inv)
+		Return CreateMatrix()
+	EndIf
+ 
+    Dim invdet# = 1 / det
+	For Dim i = 0 To 15
+		PokeFloat(inv.m + i*4, PeekFloat(inv.m + i*4) * invdet)
+	Next
+	
+	Return inv
+EndFunction
+
+Function SetMatrixOrtho(m As Matrix, left_#, right_#, bottom#, top#, near#, far#)
+	PokeFloat(m.m, 2/(right_-left_))
+	PokeFloat(m.m + 5*4, 2/(top-bottom))
+	PokeFloat(m.m + 10*4, -2/(far-near))
+	PokeFloat(m.m + 12*4, -(right_+left_)/(right_-left_))
+	PokeFloat(m.m + 13*4, -(top+bottom)/(top-bottom))
+	PokeFloat(m.m + 14*4, -(far+near)/(far-near))
+EndFunction
+
+Function SetMatrixFrustum(m As Matrix, left_#, right_#, bottom#, top#, near#, far#)
+	PokeFloat(m.m, 2*near/(right_-left_))
+	PokeFloat(m.m + 5*4, 2*near/(top-bottom))
+	PokeFloat(m.m + 8*4, (right_+left_)/(right_-left_))
+	PokeFloat(m.m + 9*4, (top+bottom)/(top-bottom))
+	PokeFloat(m.m + 10*4, -(far+near)/(far-near))
+	PokeFloat(m.m + 11*4, -1)
+	PokeFloat(m.m + 14*4, -(2*far*near)/(far-near))
+	PokeFloat(m.m + 15*4, 0)
+EndFunction
+
+Function SetMatrixPerspective(m As Matrix, fovy#, ratio#, near#, far#)
+	Dim tangent# = Tan(fovy/2)
+	Dim height# = near*tangent
+	Dim width# = height*ratio
+	SetMatrixFrustum(m, -width, width, -height, height, near, far)
+EndFunction
+
+Function MatrixLookAt(m As Matrix, posx#, posy#, posz#, lookx#, looky#, lookz#, upx#, upy#, upz#)
+	Dim upv As Vector = CreateVector(upx, upy, upz)
+	Dim psubl As Vector = CreateVector(posx - lookx, posy - looky, posz - lookz)
+	Dim nz As Vector = NormalizedVector(psubl)
+	Dim x As Vector = VectorCross(upv, nz)
+	Dim y As Vector = VectorCross(nz, x)
+	Dim nx As Vector = NormalizedVector(x)
+	Dim ny As Vector = NormalizedVector(y)
+	PokeFloat(m.m, nx.x)
+	PokeFloat(m.m + 1*4, ny.x)
+	PokeFloat(m.m + 2*4, nz.x)
+	PokeFloat(m.m + 4*4, nx.y)
+	PokeFloat(m.m + 5*4, ny.y)
+	PokeFloat(m.m + 6*4, nz.y)
+	PokeFloat(m.m + 8*4, nx.z)
+	PokeFloat(m.m + 9*4, ny.z)
+	PokeFloat(m.m + 10*4, nz.z)
+	TranslateMatrix(m, -posx, -posy, -posz)
+	Delete upv
+	Delete psubl
+	Delete x
+	Delete y
+	Delete nx
+	Delete ny
+	Delete nz
+EndFunction
