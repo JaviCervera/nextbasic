@@ -52,7 +52,7 @@ void CppGenerator::WriteIncludes() {
 	SaveString("#include <string.h>\n", filename, true);
 	SaveString("#include <string>\n", filename, true);
 	SaveString("#if defined(_WIN32)\n#define CALLCONV __stdcall\n#else\n#define CALLCONV\n#endif\n\n", filename, true);
-	SaveString("void __nb_setprogramname__(const char* name);\n", filename, true);
+    SaveString("void __nb_setprogramname__();\n", filename, true);
 	SaveString("void __nb_setcommandline__(int num, char* args[]);\n\n", filename, true);
 }
 
@@ -372,7 +372,7 @@ void CppGenerator::WriteProgram() {
 	if ( scanner.GetProgram().NumLocals() > 0 ) SaveString("\n", filename, true);
 
 	// Set program name
-	SaveString("\t__nb_setprogramname__(RealPath(argv[0]).c_str());\n", filename, true);
+    SaveString("\t__nb_setprogramname__();\n", filename, true);
 
 	// Set command line
 	SaveString("\t__nb_setcommandline__(argc-1, &argv[1]);\n", filename, true);

@@ -11,9 +11,7 @@
 #define _rmdir rmdir
 #else
 #include <direct.h>
-#include "dirent.h"
-//#undef CopyFile
-//#undef DeleteFile
+#include "dirent_msvc.h"
 #endif
 
 using namespace std;

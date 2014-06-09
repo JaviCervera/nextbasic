@@ -908,7 +908,7 @@ EXPORT void CALL CallVoidFunction(int func) {
     // Pop params from stack
     __nb_InitLibraryStack__();
     for ( i = 0; i < CountArray(__nb_libStack__); i++ ) {
-        p[i] = ArrayObject(__nb_libStack__, i);
+		p[i] = (void*)ArrayObject(__nb_libStack__, i);
     }
 
     // Call proper function
@@ -978,7 +978,7 @@ EXPORT int CALL CallIntFunction(int func) {
     // Pop params from stack
     __nb_InitLibraryStack__();
     for ( i = 0; i < CountArray(__nb_libStack__); i++ ) {
-        p[i] = ArrayObject(__nb_libStack__, i);
+		p[i] = (void*)ArrayObject(__nb_libStack__, i);
     }
 
     // Call proper function
@@ -1050,7 +1050,7 @@ EXPORT float CALL CallFloatFunction(int func) {
     // Pop params from stack
     __nb_InitLibraryStack__();
     for ( i = 0; i < CountArray(__nb_libStack__); i++ ) {
-        p[i] = ArrayObject(__nb_libStack__, i);
+		p[i] = (void*)ArrayObject(__nb_libStack__, i);
     }
 
     // Call proper function
@@ -1122,7 +1122,7 @@ EXPORT string CALL CallStringFunction(int func) {
     // Pop params from stack
     __nb_InitLibraryStack__();
     for ( i = 0; i < CountArray(__nb_libStack__); i++ ) {
-        p[i] = ArrayObject(__nb_libStack__, i);
+		p[i] = (void*)ArrayObject(__nb_libStack__, i);
     }
 
     // Call proper function
@@ -1194,7 +1194,7 @@ EXPORT int CALL CallObjectFunction(int func) {
     // Pop params from stack
     __nb_InitLibraryStack__();
     for ( i = 0; i < CountArray(__nb_libStack__); i++ ) {
-        p[i] = ArrayObject(__nb_libStack__, i);
+		p[i] = (void*)ArrayObject(__nb_libStack__, i);
     }
 
     // Call proper function
@@ -1265,7 +1265,7 @@ EXPORT void CALL CallVoidCFunction(int func) {
     // Pop params from stack
     __nb_InitLibraryStack__();
     for ( i = 0; i < CountArray(__nb_libStack__); i++ ) {
-        p[i] = ArrayObject(__nb_libStack__, i);
+		p[i] = (void*)ArrayObject(__nb_libStack__, i);
     }
 
     // Call proper function
@@ -1335,7 +1335,7 @@ EXPORT int CALL CallIntCFunction(int func) {
     // Pop params from stack
     __nb_InitLibraryStack__();
     for ( i = 0; i < CountArray(__nb_libStack__); i++ ) {
-        p[i] = ArrayObject(__nb_libStack__, i);
+		p[i] = (void*)ArrayObject(__nb_libStack__, i);
     }
 
     // Call proper function
@@ -1407,7 +1407,7 @@ EXPORT float CALL CallFloatCFunction(int func) {
     // Pop params from stack
     __nb_InitLibraryStack__();
     for ( i = 0; i < CountArray(__nb_libStack__); i++ ) {
-        p[i] = ArrayObject(__nb_libStack__, i);
+		p[i] = (void*)ArrayObject(__nb_libStack__, i);
     }
 
     // Call proper function
@@ -1479,7 +1479,7 @@ EXPORT string CALL CallStringCFunction(int func) {
     // Pop params from stack
     __nb_InitLibraryStack__();
     for ( i = 0; i < CountArray(__nb_libStack__); i++ ) {
-        p[i] = ArrayObject(__nb_libStack__, i);
+		p[i] = (void*)ArrayObject(__nb_libStack__, i);
     }
 
     // Call proper function
@@ -1551,7 +1551,7 @@ EXPORT int CALL CallObjectCFunction(int func) {
     // Pop params from stack
     __nb_InitLibraryStack__();
     for ( i = 0; i < CountArray(__nb_libStack__); i++ ) {
-        p[i] = ArrayObject(__nb_libStack__, i);
+		p[i] = (void*)ArrayObject(__nb_libStack__, i);
     }
 
     // Call proper function

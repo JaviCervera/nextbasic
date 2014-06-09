@@ -134,7 +134,7 @@ Function InverseMatrix(m As Matrix) As Matrix
     PokeFloat(inv.m + 15*4, PeekFloat(m.m+0*4) * PeekFloat(m.m+5*4) * PeekFloat(m.m+10*4) - PeekFloat(m.m+0*4) * PeekFloat(m.m+ 6*4) * PeekFloat(m.m+ 9*4) - PeekFloat(m.m+4*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+10*4) + PeekFloat(m.m+4*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+ 9*4) + PeekFloat(m.m+ 8*4) * PeekFloat(m.m+1*4) * PeekFloat(m.m+ 6*4) - PeekFloat(m.m+ 8*4) * PeekFloat(m.m+2*4) * PeekFloat(m.m+ 5*4))
  
     Dim det# = PeekFloat(m.m)*PeekFloat(inv.m) + PeekFloat(m.m + 1*4)*PeekFloat(inv.m + 4*4) + PeekFloat(m.m + 2*4)*PeekFloat(inv.m + 8*4) + PeekFloat(m.m + 3*4)*PeekFloat(inv.m + 12*4)
-	if FAbs(det) <= 0.00001
+	if AbsF(det) <= 0.00001
 		FreeMatrix(inv)
 		Return CreateMatrix()
 	EndIf

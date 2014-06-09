@@ -1,0 +1,142 @@
+$Option Console
+$Use gles20
+$Use glfw3
+$Include "include/loadmesh.nb"
+$Include "include/matrix.nb"
+
+Dim win				'GLFW window handle
+Dim winWidth = 640
+Dim winHeight = 480
+Dim mesh As MeshObject
+Dim model As Matrix
+Dim view As Matrix
+Dim proj As Matrix
+Dim mvpLoc
+Dim worldLoc
+
+Program
+	If Not Init()
+		'System("pause")
+		Return -1
+	EndIf
+	
+	'Main loop
+	While Not glfwWindowShouldClose(win)
+		Update()
+		Draw()
+		
+		glfwSwapBuffers(win)
+		glfwPollEvents()
+	EndWhile
+	
+	'Finish GLFW
+	glfwTerminate()
+EndProgram
+
+Function Init%()
+	'Init GLFW and create window
+	If Not glfwInit() : Return False : EndIf
+	win = glfwCreateWindow(winWidth, winHeight, "Suzanne", 0, 0)
+	glfwMakeContextCurrent(win)
+	
+	'Init OpenGL
+	If Not glInit()
+		Print(glInitError())
+		Return False
+	EndIf
+	glEnable(GL_DEPTH_TEST)
+	
+	'Load mesh
+	mesh = LoadPly("data/suzanne.ply")
+	If Not mesh
+		Print("Could not load mesh")
+		Return False
+	EndIf
+	BuildMesh(mesh, True)
+	
+	'Compile shaders and create program
+	Dim prog = BuildProgram("data/phong.vs", "data/phong.fs")
+	If Not prog
+		Return False
+	EndIf
+	mvpLoc = glGetUniformLocation(prog, "MVPMatrix")
+	worldLoc = glGetUniformLocation(prog, "WorldMatrix")
+	Dim posLoc = glGetAttribLocation(prog, "Position")
+	Dim norLoc = glGetAttribLocation(prog, "Normal")
+	glEnableVertexAttribArray(posLoc)
+	glEnableVertexAttribArray(norLoc)
+	glVertexAttribPointer(posLoc, 3, GL_FLOAT, False, 24, 0)
+	glVertexAttribPointer(norLoc, 3, GL_FLOAT, False, 24, 12)
+	
+	'Create matrices
+	model = CreateMatrix()
+	view = CreateMatrix()
+	proj = CreateMatrix()
+	
+	'Setup projection
+	SetMatrixPerspective(proj, 60, winWidth*1.0 / winHeight, 0.1, 20)
+	
+	'Setup view
+	MatrixLookAt(view, 2,2,2, 0,0,0, 0,1,0)
+	
+	RotateMatrix(model, 270, 1,0,0)
+		
+	Return True
+EndFunction
+
+Function Update()
+	'Update model
+	'RotateMatrix(model, 1, 0,1,0)
+	
+	'Create MVP
+	Dim vp As Matrix = MulMatrices(proj, view)
+	Dim mvp As Matrix = MulMatrices(vp, model)
+	glUniformMatrix4fv(mvpLoc, 1, False, mvp.m)
+	glUniformMatrix4fv(worldLoc, 1, False, model.m)
+	FreeMatrix(vp)
+	FreeMatrix(mvp)
+EndFunction
+
+Function Draw()
+	'Draw
+	glClearColor(0,0,0.5,1)
+	glClear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT)
+	glDrawElements(GL_TRIANGLES, mesh.numIndices, GL_UNSIGNED_SHORT, 0)
+EndFunction
+
+Function BuildProgram%(vsfile$, fsfile$)
+	'Create and compile shaders
+	Dim buf = AllocMem(4)
+	Dim vs = glCreateShader(GL_VERTEX_SHADER)
+	Dim fs = glCreateShader(GL_FRAGMENT_SHADER)
+	glShaderSource(vs, LoadString(vsfile))
+	glShaderSource(fs, LoadString(fsfile))
+	glCompileShader(vs)
+	glCompileShader(fs)
+	glGetShaderiv(vs, GL_COMPILE_STATUS, buf)
+	If PeekInt(buf) <> GL_TRUE : Print(glGetShaderInfoLog(vs))
+		Return False
+	EndIf
+	glGetShaderiv(fs, GL_COMPILE_STATUS, buf)
+	If PeekInt(buf) <> GL_TRUE
+		Print(glGetShaderInfoLog(fs))
+		Return False
+	EndIf
+		
+	'Create and activate program
+	Dim p = glCreateProgram()
+	glAttachShader(p, vs)
+	glAttachShader(p, fs)
+	glLinkProgram(p)
+	glGetProgramiv(p, GL_LINK_STATUS, buf)
+	If PeekInt(buf) <> GL_TRUE
+		Print(glGetProgramInfoLog(p))
+		Return 0
+	EndIf
+	glDeleteShader(vs)
+	glDeleteShader(fs)
+	glUseProgram(p)
+	FreeMem(buf)
+	
+	Return p
+EndFunction

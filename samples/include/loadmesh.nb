@@ -1,0 +1,95 @@
+Struct MeshObject
+	Dim vertexData	'Array
+	Dim indexData	'Array
+	Dim vertexBuffer
+	Dim indexBuffer
+	Dim numIndices
+EndStruct
+
+Function LoadPly(filename$) As MeshObject
+	Dim ply As MeshObject = New MeshObject
+	ply.vertexData = CreateArray()
+	ply.indexData = CreateArray()
+
+	'Get file lines
+	Dim lines = SplitString(Replace(Replace(LoadString(filename), "\r\n", "\n"), "\r", "\n"), "\n")
+	
+	'Find the end of the header
+	Dim i = 0
+	Dim numVertices
+	Dim numFaces
+	While ArrayString(lines, i) <> "end_header"
+		If Left(ArrayString(lines, i), 7) = "element"
+			Dim parts = SplitString(ArrayString(lines, i), " ")
+			Select ArrayString(parts, 1)
+			Case "vertex"
+				numVertices = Val(ArrayString(parts, 2))
+			Case "face"
+				numFaces = Val(ArrayString(parts, 2))
+			EndSelect
+			FreeArray(parts)
+		EndIf
+		i = i + 1
+	EndWhile
+	i = i + 1
+	
+	'Load vertices
+	For Dim v = 0 To numVertices - 1
+		parts = SplitString(ArrayString(lines, i + v), " ")
+		ArrayAddFloat(ply.vertexData, ValF(ArrayString(parts, 0)))	'x
+		ArrayAddFloat(ply.vertexData, ValF(ArrayString(parts, 1)))	'y
+		ArrayAddFloat(ply.vertexData, ValF(ArrayString(parts, 2)))	'z
+		ArrayAddFloat(ply.vertexData, ValF(ArrayString(parts, 3)))	'nx
+		ArrayAddFloat(ply.vertexData, ValF(ArrayString(parts, 4)))	'ny
+		ArrayAddFloat(ply.vertexData, ValF(ArrayString(parts, 5)))	'nz
+		FreeArray(parts)
+	Next
+	
+	'Load faces
+	For Dim f = 0 To numFaces - 1
+		parts = SplitString(ArrayString(lines, i + numVertices + f), " ")
+		ArrayAddInt(ply.indexData, Val(ArrayString(parts, 1)))	'v0
+		ArrayAddInt(ply.indexData, Val(ArrayString(parts, 2)))	'v1
+		ArrayAddInt(ply.indexData, Val(ArrayString(parts, 3)))	'v2
+		FreeArray(parts)
+	Next
+	ply.numIndices = CountArray(ply.indexData)
+	
+	FreeArray(lines)
+	
+	return ply
+EndFunction
+
+Function FreeMesh(mesh As MeshObject)
+	If mesh.vertexData : FreeArray(mesh.vertexData) : EndIf
+	If mesh.indexData : FreeArray(mesh.indexData) : EndIf
+	If mesh.vertexBuffer : glDeleteBuffer(mesh.vertexBuffer) : EndIf
+	If mesh.indexBuffer : glDeleteBuffer(mesh.indexBuffer) : EndIf
+	Delete mesh
+EndFunction
+
+Function BuildMesh(mesh As MeshObject, clearArrays)
+	Dim vertexMem = AllocMem(CountArray(mesh.vertexData)*4)
+	Dim indexMem = AllocMem(CountArray(mesh.indexData)*2)
+	For Dim i = 0 To CountArray(mesh.vertexData) - 1
+		PokeFloat(vertexMem + i*4, ArrayFloat(mesh.vertexData, i))
+	Next
+	For i = 0 To CountArray(mesh.indexData) - 1
+		PokeShort(indexMem + i*2, ArrayInt(mesh.indexData, i))
+	Next
+	mesh.vertexBuffer = glCreateBuffer()
+	mesh.indexBuffer = glCreateBuffer()
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vertexBuffer)
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.indexBuffer)
+	glBufferData(GL_ARRAY_BUFFER, CountArray(mesh.vertexData)*4, vertexMem, GL_DYNAMIC_DRAW)
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, CountArray(mesh.indexData)*2, indexMem, GL_STATIC_DRAW)
+	If clearArrays
+		FreeArray(mesh.vertexData)
+		FreeArray(mesh.indexData)
+		mesh.vertexData = 0
+		mesh.indexData = 0
+	EndIf
+	
+	FreeMem(vertexMem)
+	FreeMem(indexMem)
+EndFunction

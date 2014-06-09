@@ -169,7 +169,7 @@ IdType Syntactical::ParseDim(DimScope scope) {
 
     // Optional assignment (mandatory in constants and For vars, forbidden in arrays)
     // Can be an expression, except for constants and fields, where it must be
-    // a literal or a constant (or New if it's a field)
+	// a literal (which can be preceded by '-') or a constant (or New if it's a field)
     if ( scope == SCOPE_CONST && stream.Peek().Type() != TokenAssign ) {
         Error::Set("Expected constant initialization", stream.Next());
         return TypeVoid;
@@ -186,26 +186,29 @@ IdType Syntactical::ParseDim(DimScope scope) {
         }
 
         stream.Next();  // =
+		int expOffset = stream.Pos();
 
-        // Check literal or constant if it's a constant or field
-        if ( (scope == SCOPE_CONST || scope == SCOPE_STRUCT) && (stream.Peek().Type() != TokenIntLiteral
-                                                                 && stream.Peek().Type() != TokenFloatLiteral
-                                                                 && stream.Peek().Type() != TokenStringLiteral
-                                                                 && (stream.Peek().Type() != TokenIdentifier
-                                                                     || (stream.Peek().Type() == TokenIdentifier
-                                                                         && scanner.CountConstantOccurences(stream.Peek().Data()) == 0))) ) {
-            // New operator is allowed in a field
-            if ( scope != SCOPE_STRUCT ) {
-                Error::Set("Expected literal or constant", stream.Next());
-                return TypeVoid;
-            } else if ( stream.Peek().Type() != TokenNew ) {
-                Error::Set("Expected literal, constant or New", stream.Next());
-                return TypeVoid;
-            }
-        }
+		// If it's a constant or field...
+		if ( (scope == SCOPE_CONST || scope == SCOPE_STRUCT) ) {
+			// Skip "-" if present
+			if ( stream.Peek().Type() == TokenMinus ) stream.Skip(1);
+
+			// Check literal or constant
+			if ( stream.Peek().Type() != TokenIntLiteral && stream.Peek().Type() != TokenFloatLiteral && stream.Peek().Type() != TokenStringLiteral
+				 && (stream.Peek().Type() != TokenIdentifier || (stream.Peek().Type() == TokenIdentifier && scanner.CountConstantOccurences(stream.Peek().Data()) == 0)) ) {
+				// New operator not allowed if it is not a struct field
+				if ( scope != SCOPE_STRUCT ) {
+					Error::Set("Expected literal or constant", stream.Next());
+					return TypeVoid;
+				} else if ( stream.Peek().Type() != TokenNew ) {
+					Error::Set("Expected literal, constant or New", stream.Next());
+					return TypeVoid;
+				}
+			}
+		}
 
         // Eval expression
-        int expOffset = stream.Pos();
+		stream.Seek(expOffset);
         IdType expType = ParseExpression(false);
         if ( Error::Get() != "" ) return TypeVoid;
 

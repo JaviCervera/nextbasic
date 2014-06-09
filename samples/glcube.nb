@@ -112,7 +112,7 @@ Program
 		If glfwGetKey(win, GLFW_KEY_ESCAPE) : glfwSetWindowShouldClose(win, True) : EndIf
 	
 		'Rotate model
-		RotateMatrix(model, 1, 0, 1, 0)
+		RotateMatrix(model, 0.5, 0, 1, 0)
 	
 		'Set MVP
 		Dim mv As Matrix = MulMatrices(view, model)

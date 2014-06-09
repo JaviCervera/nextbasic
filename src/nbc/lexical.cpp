@@ -7,7 +7,7 @@ using namespace std;
 
 Lexical::Lexical(const string& filename) {
 	// Open file
-    buffer = LoadString(filename.c_str());
+	buffer = LoadString(filename);
 	if ( buffer == "" ) {
 		error = "Could not open file '" + filename + "'";
 		return;
@@ -20,7 +20,7 @@ Lexical::Lexical(const string& filename) {
 	line = 1;
 	
 	// Fill symbols table
-    string spacedSymbols = "<> >= <= > < + - * / = , : . ( ) % # $";
+	string spacedSymbols = "<> >= <= > < + - * / = , : . ( ) % # $";
 	int arr = SplitString(spacedSymbols, " ");
 	for ( int i = 0; i < CountArray(arr); i++ ) {
 		symbols.push_back(ArrayString(arr, i));
@@ -66,7 +66,6 @@ Token Lexical::NextToken() {
 
 	// Check number
 	if ( IsNumber(buffer[p])
-			|| (p < (int)buffer.length()-1 && (buffer[p] == '-' && IsNumber(buffer[p+1])))
 			|| (p < (int)buffer.length()-1 && (buffer[p] == '$' && IsNumber(buffer[p+1]))) ) {
 		TokenType type = TokenIntLiteral;
 		bool isHex = (buffer[p] == '$');

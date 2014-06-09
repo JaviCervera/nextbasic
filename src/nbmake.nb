@@ -63,7 +63,7 @@ Program
 	'Build executable
 	Dim modulesArr = SplitString(Right(modules, Len(modules) - 11), ",")
 	Dim libsArr = SplitString(Right(libs, Len(libs) - 8), ",")
-	System(GetCommandLine(cppFilename, modulesArr, libsArr, isGuiApp))
+	compilerCode = System(GetCommandLine(cppFilename, modulesArr, libsArr, isGuiApp))
 	FreeArray(modulesArr)
 	FreeArray(libsArr)
 	
@@ -73,7 +73,7 @@ Program
 	EndIf
 	
 	'Create Mac bundle if needed
-	If PlatformId() = PLATFORM_MAC And isGuiApp
+	If PlatformId() = PLATFORM_MAC And isGuiApp And compilerCode = 0
 		Print("Generating application bundle...")
 		
 		Dim bundleName$ = StripExt(cppFilename) + ".app"
@@ -138,14 +138,19 @@ Function GetCommandLine$(cppfilename$, modulesArr, libsArr, isGuiApp)
 	
 	'Link modules
 	Dim linkOpenGL = False
+	Dim linkSDL2 = False
 	For i = 0 To CountArray(libsArr) - 1
+		Select ArrayString(libsArr, i)
 		'Handle OpenGL differently
-		If ArrayString(libsArr, i) = "opengl"
-			linkOpenGL = true
+		Case "opengl"
+			linkOpenGL = True
+		'Handle SDL2 differently
+		Case "sdl2"
+			linkSDL2 = True
 		'Other library
-		Else
+		Default
 			cmd = cmd + " -l" + ArrayString(libsArr, i) + platform
-		EndIf
+		EndSelect
 	Next
 	Select PlatformId()
 	Case PLATFORM_WINDOWS
@@ -154,10 +159,11 @@ Function GetCommandLine$(cppfilename$, modulesArr, libsArr, isGuiApp)
 		If isGuiApp : cmd = cmd + " -mwindows" : EndIf
 	Case PLATFORM_MAC
 		If linkOpenGL : cmd = cmd + " -framework IOKit -framework QuartzCore -framework OpenGL" : EndIf
+		If linkSDL2 : cmd = cmd + " -lsdl2.mac -liconv -framework AudioUnit -framework Carbon -framework CoreAudio -framework ForceFeedback -framework IOKit" : EndIf
 		cmd = cmd + " -framework AppKit"
 	Case PLATFORM_LINUX
 		If linkOpenGL : cmd = cmd + " -lGL -lX11 -lXxf86vm -lXrandr -lXi" : EndIf
-		cmd = cmd + " -ldl -lm"
+		cmd = cmd + " -ldl -lm -lpthread"
 	EndSelect
 	
 	Return cmd

@@ -61,8 +61,8 @@ EXPORT string ArrayString(int arr, int index) {
 	return ((Array*)arr)->at(index).String();
 }
 
-EXPORT void* CALL ArrayObject(int arr, int index) {
-	return ((Array*)arr)->at(index).Object();
+EXPORT int CALL ArrayObject(int arr, int index) {
+	return (int)((Array*)arr)->at(index).Object();
 }
 
 EXPORT void CALL ArrayRemoveAt(int arr, int index) {

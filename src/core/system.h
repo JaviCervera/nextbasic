@@ -17,7 +17,7 @@ EXPORT std::string CALL RunProgram(std::string program);
 EXPORT void CALL End(int exitCode);
 
 // Internal functions
-void __nb_setprogramname__(const char* name);
+void __nb_setprogramname__();
 void __nb_setcommandline__(int num, char* args[]);
 
 #endif // SYSTEM_H

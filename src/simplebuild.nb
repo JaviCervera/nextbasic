@@ -1,0 +1,12 @@
+$Option Console
+
+Program
+	'Check command line
+	If CountArray(CommandLine()) <> 1
+		Print("Usage: " + ProgramName() + " buildfile")
+		End(-1)
+	EndIf
+	Dim buildfile$ = ArrayString(CommandLine(), 0)
+	
+	
+EndProgram

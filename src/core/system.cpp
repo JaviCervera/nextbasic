@@ -1,11 +1,19 @@
 #include "system.h"
 #include "array.h"
+#include "string.h"
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef _WIN32
+#if defined(_WIN32)
+#undef UNICODE
+#include <windows.h>
 #define popen _popen
 #define pclose _pclose
+#elif defined(__APPLE__)
+#include <libproc.h>
+#elif defined(__gnu_linux__)
+#include <unistd.h>
 #endif
 
 using namespace std;
@@ -18,7 +26,7 @@ EXPORT int CALL PlatformId() {
     return PLATFORM_WINDOWS;
 #elif defined(__APPLE__)
     return PLATFORM_MAC;
-#elif defined(__linux__)
+#elif defined(__gnu_linux__)
     return PLATFORM_LINUX;
 #else
     return 0;
@@ -65,8 +73,24 @@ EXPORT void CALL End(int exitCode) {
     exit(exitCode);
 }
 
-void __nb_setprogramname__(const char* name) {
-	programName = string(name);
+void __nb_setprogramname__() {
+#if defined(_WIN32)
+	char pathbuf[PATH_MAX];
+	GetModuleFileName(NULL, pathbuf, PATH_MAX);
+	programName = pathbuf;
+#elif defined(__APPLE__)
+	char pathbuf[PROC_PIDPATHINFO_MAXSIZE];
+	pid_t pid = getpid();
+	proc_pidpath (pid, pathbuf, sizeof(pathbuf));
+	programName = pathbuf;
+#elif defined(__gnu_linux__)
+	char pathbuf[PATH_MAX];
+	ssize_t len = readlink("/proc/self/exe", pathbuf, sizeof(pathbuf)-1);
+	pathbuf[len] = '\0';
+	programName = pathbuf;
+#else
+#error "Implement retrieval of binary path. Some help here: http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe/1024937#1024937"
+#endif
 }
 
 void __nb_setcommandline__(int num, char* args[]) {

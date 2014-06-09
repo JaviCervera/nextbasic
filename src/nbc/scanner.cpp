@@ -11,7 +11,7 @@ void Scanner::ParseConstants() {
 
     // Parse whole buffer
     while ( stream.HasNext() ) {
-        // If "const" keyword is found
+		// If "Const" keyword is found
         if ( stream.Next().Type() == TokenConst ) {
             // If identifier is found
             if ( stream.Peek().Type() == TokenIdentifier ) {

@@ -8,7 +8,7 @@ EXPORT float CALL Floor(float val);
 EXPORT float CALL Ceil(float val);
 EXPORT float CALL Sgn(float val);
 EXPORT int CALL Abs(int val);
-EXPORT float CALL FAbs(float val);
+EXPORT float CALL AbsF(float val);
 EXPORT float CALL Sqr(float val);
 EXPORT float CALL Sin(float val);
 EXPORT float CALL Cos(float val);
@@ -21,7 +21,7 @@ EXPORT float CALL Exp(float val);
 EXPORT float CALL Log(float val);
 EXPORT float CALL Log10(float val);
 EXPORT int CALL Rand(int min, int max);
-EXPORT float CALL FRand(float min, float max);
+EXPORT float CALL RandF(float min, float max);
 EXPORT void CALL SeedRnd(int seed);
 EXPORT float CALL Wrap(float value, float module);
 

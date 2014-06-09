@@ -8,13 +8,22 @@
 #include "lexical.h"
 #include "preprocessor.h"
 #include "syntactical.h"
+#include <limits.h>
 #include <iostream>
 #include <map>
+#if defined(_WIN32)
+#undef UNICODE
+#include <windows.h>
+#elif defined(__APPLE__)
+#include <libproc.h>
+#elif defined(__gnu_linux__)
+#include <unistd.h>
+#endif
 
 using namespace std;
 
 enum ErrorCode {
-    NO_ERROR = 0,
+	NO__ERROR = 0,
     ERROR_USAGE = -1,
     ERROR_PREPROCESS = -2,
     ERROR_INCLUDE = -3,
@@ -33,8 +42,25 @@ void SaveTokens(const vector<Token>& tokens, const string& filename);
 int main(int argc, char* argv[]) {
     int msecs = Millisecs();
 
-    // Save app dir
-    string appDir = ExtractDir(RealPath(argv[0]));
+	// Save app dir
+#if defined(_WIN32)
+	char appDirBuf[PATH_MAX];
+	GetModuleFileName(NULL, appDirBuf, PATH_MAX);
+	string appDir = ExtractDir(appDirBuf);
+#elif defined(__APPLE__)
+	char pathbuf[PROC_PIDPATHINFO_MAXSIZE];
+	pid_t pid = getpid();
+	proc_pidpath (pid, pathbuf, sizeof(pathbuf));
+	string appDir = ExtractDir(pathbuf);
+#elif defined(__gnu_linux__)
+    char pathbuf[PATH_MAX];
+    ssize_t len = readlink("/proc/self/exe", pathbuf, sizeof(pathbuf)-1);
+    pathbuf[len] = '\0';
+    string appDir = ExtractDir(pathbuf);
+#else
+#error "Implement retrieval of binary path. Help here: http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe/1024937#1024937"
+#endif
+	//string appDir = ExtractDir(RealPath(argv[0]));
 
     // Check command line
     if ( argc != 2 && argc != 3 ) {
@@ -111,7 +137,7 @@ int main(int argc, char* argv[]) {
         }
 
         // Change to app dir
-        ChangeDir(appDir.c_str());
+		ChangeDir(appDir.c_str());
 
         // Add core module as last on the list, since it is required this way under Linux
         preprocessor.AddModule("core");
@@ -146,7 +172,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Restore app dir
-    ChangeDir(appDir.c_str());
+	ChangeDir(appDir.c_str());
 
 	//SaveTokens(preprocessor.PreprocessedTokens(), "tokens.txt");
 
@@ -168,7 +194,7 @@ int main(int argc, char* argv[]) {
 
     cout << "Done in " << ((Millisecs()-msecs)/1000.0) << " seconds." << endl;
 
-    return NO_ERROR;
+	return NO__ERROR;
 }
 
 IdType GetType(string type) {
@@ -186,7 +212,7 @@ IdType GetType(string type) {
 }
 
 void SaveTokens(const vector<Token>& tokens, const string& filename) {
-    map<TokenType,string> desc;
+	map<int,string> desc;
     desc[TokenEndOfLine] = "TokenEndOfLine";
     desc[TokenPreprocInclude] = "TokenPreprocInclude";
 	desc[TokenPreprocUse] = "TokenPreprocUse";

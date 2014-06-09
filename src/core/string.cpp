@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <algorithm>
+#include <functional>
 
 #ifdef _WIN32
 #define realpath(N,R) _fullpath((R),(N),FILENAME_MAX)
@@ -152,7 +153,7 @@ EXPORT string CALL LoadString(string filename) {
 	FILE* f = fopen(filename.c_str(), "rb");
 
 	// If it does not exist, return NULL
-	if ( f == NULL ) return NULL;
+	if ( f == NULL ) return "";
 
 	// Get file size
 	fseek(f, 0, SEEK_END);

@@ -18,7 +18,7 @@ EXPORT void CALL ArraySetObject(int arr, int index, void* obj);
 EXPORT int CALL ArrayInt(int arr, int index);
 EXPORT float CALL ArrayFloat(int arr, int index);
 EXPORT std::string CALL ArrayString(int arr, int index);
-EXPORT void* CALL ArrayObject(int arr, int index);
+EXPORT int CALL ArrayObject(int arr, int index);
 EXPORT void CALL ArrayRemoveAt(int arr, int index);
 EXPORT void CALL ArrayRemoveObject(int arr, void* obj);
 EXPORT void CALL ClearArray(int arr);

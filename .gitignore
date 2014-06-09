@@ -42,6 +42,11 @@ Makefile*
 
 *.autosave
 
+# VC++
+
+*.exe.embed.manifest
+
 # Exceptions
 
 !modules/glfw3/libglfw3.*.a
+!modules/glfw3/glfw3.*.lib

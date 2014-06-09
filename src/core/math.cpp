@@ -30,7 +30,7 @@ EXPORT int CALL Abs(int val) {
     return abs(val);
 }
 
-EXPORT float CALL FAbs(float val) {
+EXPORT float CALL AbsF(float val) {
     return (float)fabs(val);
 }
 
@@ -83,8 +83,8 @@ EXPORT int CALL Rand(int min, int max) {
     return min + (rand() % range);
 }
 
-EXPORT float CALL FRand(float min, float max) {
-    return (float)(Rand((int)min * 1000000, (int)max * 1000000) / 1000000.0);
+EXPORT float CALL RandF(float min, float max) {
+	return (float)(Rand((int)min * 1000, (int)max * 1000) / 1000.0);
 }
 
 EXPORT void CALL SeedRnd(int seed) {
