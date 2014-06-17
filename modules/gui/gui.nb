@@ -1,0 +1,73 @@
+$Link "wxplain"
+$Link "wxwidgets"
+
+Const ID_ABOUT = 5014
+Const ID_QUIT = 5006
+Const EVENT_INIT = 1
+Const EVENT_MENU = 2
+Const WINDOW_TITLEBAR = 1
+Const WINDOW_RESIZABLE = 2
+Const WINDOW_TOOL = 4
+Const WINDOW_MODAL = 8
+Const WINDOW_CENTER = 16
+
+Extern "Linkage:C"
+	Function RunApp%(handler_)
+	Function LoadBitmap%(filename_$)
+	Function FreeBitmap(bitmap_)
+	Function CreateEditor%(editor_, readonly_)
+	Function EditorColumn%(editor_)
+	Function EditorCopy(editor_)
+	Function EditorCursorPos%(editor_)
+	Function EditorCut(editor_)
+	Function EditorLine%(editor_)
+	Function EditorPaste(editor_)
+	Function EditorSelectionLen%(editor_)
+	Function EditorSelectionPos%(editor_)
+	Function EditorRedo(editor_)
+	Function EditorCanRedo%(editor_)
+	Function EditorText$(editor_)
+	Function EditorUndo(editor_)
+	Function EditorCanUndo%(editor_)
+	Function SelectEditorText(editor_, pos_, length_)
+	Function SetEditorCursorPos(editor_, pos_)
+	Function SetEditorFont(editor_, font_)
+	Function SetEditorTabSize(editor_, tabsize_)
+	Function SetEditorText(editor_, text_$)
+	Function CreateMenuBar%(win_)
+	Function AddMenuTitle%(menubar_, title_$)
+	Function AddMenuItem(menu_, id_, text_$)
+	Function AddMenuSeparator(menu_)
+	Function AddSubMenu%(menu_, id_, title_$)
+	Function Notify(parent_, title_$, text_$)
+	Function CreateScintillaEditor%(parent_)
+	Function CreateStatusBar%(parent_)
+	Function SetStatusBarText(statusbar_, text_$)
+	Function StatusBarText$(statusbar_)
+	Function CreateTabBar%(parent_)
+	Function AddTabBarItem(tabbar_, item_, text_$)
+	Function CountTabBarItems%(tabbar_)
+	Function RemoveTabBarItem(tabbar_, index_)
+	Function SetTabBarIndex(tabbar_, index_)
+	Function TabBarIndex%(tabbar_)
+	Function SetTabText(tabbar_, index_, text_$)
+	Function TabText$(tabbar_, index_)
+	Function TabWidget%(tabbar_, index_)
+	Function CreateToolBar%(parent_)
+	Function AddToolBarButton(toolbar_, id_, bitmap_, tooltip_$)
+	Function AddToolBarSeparator(toolbar_)
+	Function AddToolBarWidget(toolbar_, widget_)
+	Function FreeWidget%(widget_)
+	Function LayoutWidget(widget_, x_, y_, width_, height_)
+	Function WidgetX%(widget_)
+	Function WidgetY%(widget_)
+	Function WidgetWidth%(widget_)
+	Function WidgetHeight%(widget_)
+	Function EnableWidget(widget_, enable_)
+	Function ShowWidget(widget_, show_)
+	Function FocusWidget(widget_)
+	Function WidgetOSHandle%(widget_)
+	Function SetWidgetStyleSheet(widget_, sheet_$)
+	Function CreateWindow%(parent_, x_, y_, width_, height_, flags_)
+	Function SetWindowTitle(window_, title_$)
+EndExtern

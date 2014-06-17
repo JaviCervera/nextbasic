@@ -1,0 +1,15 @@
+$Option Gui
+$Use gui
+
+Program
+	RunApp(EventHandler)
+EndProgram
+
+Function EventHandler%(event, widget, id)
+	Select event
+	Case EVENT_INIT
+		Dim win = CreateWindow(0, 0, 0, 640, 480, WINDOW_TITLEBAR + WINDOW_RESIZABLE + WINDOW_CENTER)
+		ShowWidget(win, True)
+	EndSelect
+	Return False
+EndFunction

@@ -1,0 +1,324 @@
+$Link "irrlicht"
+$Link "irrlicht_wrap"
+
+'Rendering Device Types
+Const IRR_EDT_NULL = 0
+Const IRR_EDT_SOFTWARE = 1
+Const IRR_EDT_SOFTWARE2 = 2
+Const IRR_EDT_OPENGL = 3
+Const IRR_EDT_DIRECT3D8 = 4
+Const IRR_EDT_DIRECT3D9 = 5
+
+'Material Flags
+Const IRR_EMF_WIREFRAME = 0
+Const IRR_EMF_POINTCLOUD = 1
+Const IRR_EMF_GOURAUD_SHADING = 2
+Const IRR_EMF_LIGHTING = 3
+Const IRR_EMF_ZBUFFER = 4
+Const IRR_EMF_ZWRITE_ENABLE = 5
+Const IRR_EMF_BACK_FACE_CULLING = 6
+Const IRR_EMF_FRONT_FACE_CULLING = 7
+Const IRR_EMF_BILINEAR_FILTER = 8
+Const IRR_EMF_TRILINEAR_FILTER = 9
+Const IRR_EMF_ANISOTROPIC_FILTER = 10
+Const IRR_EMF_FOG_ENABLE = 11
+Const IRR_EMF_NORMALIZE_NORMALS = 12
+Const IRR_EMF_TEXTURE_WRAP = 13
+Const IRR_EMF_ANTI_ALIASING = 14
+Const IRR_EMF_COLOR_MASK = 15
+Const IRR_EMF_COLOR_MATERIAL = 16
+
+'Material Types
+Const IRR_EMT_SOLID = 0
+Const IRR_EMT_SOLID_2_LAYER = 1
+Const IRR_EMT_LIGHTMAP = 2
+Const IRR_EMT_LIGHTMAP_ADD = 3
+Const IRR_EMT_LIGHTMAP_M2 = 4
+Const IRR_EMT_LIGHTMAP_M4 = 5
+Const IRR_EMT_LIGHTMAP_LIGHTING = 6
+Const IRR_EMT_LIGHTMAP_LIGHTING_M2 = 7
+Const IRR_EMT_LIGHTMAP_LIGHTING_M4 = 8
+Const IRR_EMT_DETAIL_MAP = 9
+Const IRR_EMT_SPHERE_MAP = 10
+Const IRR_EMT_REFLECTION_2_LAYER = 11
+Const IRR_EMT_TRANSPARENT_ADD_COLOR = 12
+Const IRR_EMT_TRANSPARENT_ALPHA_CHANNEL = 13
+Const IRR_EMT_TRANSPARENT_ALPHA_CHANNEL_REF = 14
+Const IRR_EMT_TRANSPARENT_VERTEX_ALPHA = 15
+Const IRR_EMT_TRANSPARENT_REFLECTION_2_LAYER = 16
+Const IRR_EMT_NORMAL_MAP_SOLID = 17
+Const IRR_EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR = 18
+Const IRR_EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA = 19
+Const IRR_EMT_PARALLAX_MAP_SOLID = 20
+Const IRR_EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR = 21
+Const IRR_EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA = 22
+Const IRR_EMT_ONE_TEXTURE_BLEND = 23
+Const IRR_EMT_FOUR_DETAIL_MAP = 24
+Const IRR_EMT_TRANSPARENT_ADD_ALPHA_CHANNEL_REF = 25
+Const IRR_EMT_TRANSPARENT_ADD_ALPHA_CHANNEL = 26
+Const IRR_EMT_FORCE_32BIT = $7fffffff
+
+'blend factors for the ONE_TEXTURE_BLEND material
+Const IRR_EBF_ZERO = 0
+Const IRR_EBF_ONE = 1
+Const IRR_EBF_DST_COLOR = 2
+Const IRR_EBF_ONE_MINUS_DST_COLOR = 3
+Const IRR_EBF_SRC_COLOR = 4
+Const IRR_EBF_ONE_MINUS_SRC_COLOR = 5
+Const IRR_EBF_SRC_ALPHA = 6
+Const IRR_EBF_ONE_MINUS_SRC_ALPHA = 7
+Const IRR_EBF_DST_ALPHA = 8
+Const IRR_EBF_ONE_MINUS_DST_ALPHA = 9
+Const IRR_EBF_SRC_ALPHA_SATURATE = 10
+
+'Mouse events
+Const IRR_EMIE_LMOUSE_PRESSED_DOWN = 0
+Const IRR_EMIE_RMOUSE_PRESSED_DOWN = 1
+Const IRR_EMIE_MMOUSE_PRESSED_DOWN = 2
+Const IRR_EMIE_LMOUSE_LEFT_UP = 3
+Const IRR_EMIE_RMOUSE_LEFT_UP = 4
+Const IRR_EMIE_MMOUSE_LEFT_UP = 5
+Const IRR_EMIE_MOUSE_MOVED = 6
+Const IRR_EMIE_MOUSE_WHEEL = 7
+
+' Event types
+Const IRR_EET_GUI_EVENT = 0
+Const IRR_EET_MOUSE_INPUT_EVENT = 1
+Const IRR_EET_KEY_INPUT_EVENT = 2
+Const IRR_EET_JOYSTICK_INPUT_EVENT = 3
+Const IRR_EET_LOG_TEXT_EVENT = 4
+Const IRR_EET_USER_EVENT = 5
+
+' MD2 Animation sequences
+Const IRR_EMAT_STAND = 0
+Const IRR_EMAT_RUN = 1
+Const IRR_EMAT_ATTACK = 2
+Const IRR_EMAT_PAIN_A = 3
+Const IRR_EMAT_PAIN_B = 4
+Const IRR_EMAT_PAIN_C = 5
+Const IRR_EMAT_JUMP = 6
+Const IRR_EMAT_FLIP = 7
+Const IRR_EMAT_SALUTE = 8
+Const IRR_EMAT_FALLBACK = 9
+Const IRR_EMAT_WAVE = 10
+Const IRR_EMAT_POINT = 11
+Const IRR_EMAT_CROUCH_STAND = 12
+Const IRR_EMAT_CROUCH_WALK = 13
+Const IRR_EMAT_CROUCH_ATTACK = 14
+Const IRR_EMAT_CROUCH_PAIN = 15
+Const IRR_EMAT_CROUCH_DEATH = 16
+Const IRR_EMAT_DEATH_FALLBACK = 17
+Const IRR_EMAT_DEATH_FALLFORWARD = 18
+Const IRR_EMAT_DEATH_FALLBACKSLOW = 19
+Const IRR_EMAT_BOOM = 20
+
+' For the FPS camera
+Const IRR_EKA_MOVE_FORWARD = 0
+Const IRR_EKA_MOVE_BACKWARD = 1
+Const IRR_EKA_STRAFE_LEFT = 2
+Const IRR_EKA_STRAFE_RIGHT = 3
+Const IRR_EKA_JUMP_UP = 4
+Const IRR_EKA_COUNT = 5
+Const IRR_EKA_FORCE_32BIT = $7fffffff
+
+' Light types
+Const IRR_ELT_POINT = 0
+Const IRR_ELT_SPOT = 1
+Const IRR_ELT_DIRECTIONAL = 2
+
+' Joint animation modes
+Const IRR_JOINT_MODE_NONE = 0
+Const IRR_JOINT_MODE_READ = 1
+Const IRR_JOINT_MODE_CONTROL = 2
+
+' shadow modes for lighting
+Const IRR_ESM_RECEIVE = 0
+Const IRR_ESM_CAST = 1
+Const IRR_ESM_BOTH = 2
+Const IRR_ESM_EXCLUDE = 3
+Const IRR_ESM_COUNT = 4
+
+' filter types, up to 16 samples PCF.
+Const IRR_EFT_NONE = 0
+Const IRR_EFT_4PCF = 1
+Const IRR_EFT_8PCF = 2
+Const IRR_EFT_12PCF = 3
+Const IRR_EFT_16PCF = 4
+Const IRR_EFT_COUNT = 5
+
+' Pre-programmed shader constants
+Const IRR_NO_PRESET = 0
+Const IRR_INVERSE_WORLD = 1
+Const IRR_WORLD_VIEW_PROJECTION = 2
+Const IRR_CAMERA_POSITION = 3
+Const IRR_TRANSPOSED_WORLD = 4
+
+' Vertex shader program versions
+Const IRR_EVST_VS_1_1 = 0
+Const IRR_EVST_VS_2_0 = 1
+Const IRR_EVST_VS_2_a = 2
+Const IRR_EVST_VS_3_0 = 3
+
+' Pixel shader program versions
+Const IRR_EPST_PS_1_1 = 0
+Const IRR_EPST_PS_1_2 = 1
+Const IRR_EPST_PS_1_3 = 2
+Const IRR_EPST_PS_1_4 = 3
+Const IRR_EPST_PS_2_0 = 4
+Const IRR_EPST_PS_2_a = 5
+Const IRR_EPST_PS_2_b = 6
+Const IRR_EPST_PS_3_0 = 7
+
+'...
+
+' Irrlicht Keyboard and Mouse Event Structures
+Struct IRR_MOUSE_EVENT
+	Dim action
+	Dim delta#
+	Dim x
+	Dim y
+EndStruct
+
+Struct IRR_KEY_EVENT
+	Dim key
+	Dim direction
+	Dim flags
+EndStruct
+
+Struct IRR_GUI_EVENT
+	Dim id
+	Dim event
+	Dim x
+	Dim y
+EndStruct
+
+' Particle emitter properties
+Struct IRR_PARTICLE_EMITTER
+	Dim min_box_x#
+	Dim min_box_y#
+	Dim min_box_z#
+	
+	Dim max_box_x#
+	Dim max_box_y#
+	Dim max_box_z#
+	
+	Dim direction_x#
+	Dim direction_y#
+	Dim direction_z#
+	
+	Dim min_particles_per_second
+	Dim max_particles_per_second
+	
+	Dim min_start_color_red
+	Dim min_start_color_green
+	Dim min_start_color_blue
+	
+	Dim max_start_color_red
+	Dim max_start_color_green
+	Dim max_start_color_blue
+	
+	Dim min_lifetime
+	Dim max_lifetime
+	
+	Dim min_start_sizeX#
+	Dim min_start_sizeY#
+	
+	Dim max_start_sizeX#
+	Dim max_start_sizeY#
+	
+	Dim max_angle_degrees
+EndStruct
+
+' a vertex used in creating custom static mesh objects
+Struct IRR_VERT
+	Dim x#
+	Dim y#
+	Dim z#
+	Dim normal_x#
+	Dim normal_y#
+	Dim normal_z#
+	Dim vcolor
+	Dim texture_x#
+	Dim texture_y#
+EndStruct
+
+' a vector consisting of 3 float values
+Struct IRR_VECTOR
+	Dim x#
+	Dim y#
+	Dim z#
+EndStruct
+
+' a size consisting of 2 float values
+Struct IRR_SIZE
+	Dim x#
+	Dim y#
+EndStruct
+
+' the contents of a key event
+Struct SKeyMap
+	Dim Action
+	Dim KeyCode
+EndStruct
+
+' a material representing a new shader
+Struct IRR_SHADER
+	Dim material_type
+	'Internal use
+	Dim material_object
+	Dim next_shader
+EndStruct
+
+Struct SBillboard
+	Dim pos_x#
+	Dim pos_y#
+	Dim pos_z#
+	Dim size_x#
+	Dim size_y#
+	Dim roll#
+	Dim axis_x#
+	Dim axis_y#
+	Dim axis_z#
+	Dim HasAxis
+	Dim sColor
+	Dim vertexIndex
+	Dim sprev
+	Dim snext
+EndStruct
+
+Extern "Linkage:C"
+
+'' ////////////////////////////////////////////////////////////////////////////
+'' System Functions
+
+' Start the Irrlicht interface (deprecated command)
+Function IrrStart(device_type, iwidth, iheight, bitsperpixel, fullscreen, use_shadows, iCaptureMouse, vsync)
+
+' an advanced method of starting the irrlicht interface
+Function IrrStartAdvanced%(drivertype, scrWidth, scrHeight, bits, fullscreen, shadows, dontignoreinput, vsyncenabled, devicetype, doublebufferenabled, antialiasenabled, highprecisionfpu)
+
+' allow transparency to write to the z buffer
+Function IrrTransparentZWrite()
+
+' determine if the Irrlicht viewport is running. 0 = No 1 = Yes
+Function IrrRunning%()
+
+' limit drawing to a specific area of the screen
+Function IrrSetViewPort(topX, topY, botX, botY)
+
+' initialise the frame drawing cycle, erasing the canvas ready for drawing
+Function IrrBeginScene(red, green, blue)
+
+' Readies a scene for rendering, erasing the canvas and setting a background color.
+Function IrrBeginSceneAdvanced(sceneBackgroundColor, clearBackBuffer, clearZBuffer)	'*** CHANGE BYTE ARGS
+
+' draw the scene to the canvas
+Function IrrDrawScene()
+
+' draw scene manager objects to a texture surface, the texture must have been
+' created with a call to IrrCreateRenderTargetTexture
+Function IrrDrawSceneToTexture(tex)
+
+
+
+EndExtern

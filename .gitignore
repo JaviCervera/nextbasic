@@ -49,4 +49,5 @@ Makefile*
 # Exceptions
 
 !modules/glfw3/libglfw3.*.a
-!modules/glfw3/glfw3.*.lib
+!modules/gui/libwx*.a
+!modules/sdl2/libsdl2.*.a

@@ -139,15 +139,19 @@ Function GetCommandLine$(cppfilename$, modulesArr, libsArr, isGuiApp)
 	'Link modules
 	Dim linkOpenGL = False
 	Dim linkSDL2 = False
+	Dim linkWX = False
 	For i = 0 To CountArray(libsArr) - 1
 		Select ArrayString(libsArr, i)
-		'Handle OpenGL differently
+		'OpenGL
 		Case "opengl"
 			linkOpenGL = True
-		'Handle SDL2 differently
+		'SDL2
 		Case "sdl2"
 			linkSDL2 = True
-		'Other library
+		'wxWidgets
+		Case "wxwidgets"
+			linkWX = True
+		'Other
 		Default
 			cmd = cmd + " -l" + ArrayString(libsArr, i) + platform
 		EndSelect
@@ -155,11 +159,13 @@ Function GetCommandLine$(cppfilename$, modulesArr, libsArr, isGuiApp)
 	Select PlatformId()
 	Case PLATFORM_WINDOWS
 		If linkOpenGL : cmd = cmd + " -lopengl32" : EndIf
+		If linkWX : cmd = cmd + " -lwx_mswu-3.0.win32 -lwxregexu-3.0.win32 -lwxexpat-3.0.win32 -lwxtiff-3.0.win32 -lwxjpeg-3.0.win32 -lwxpng-3.0.win32 -lwxzlib-3.0.win32 -lrpcrt4 -loleaut32 -lole32 -luuid -lwinspool -lshell32 -lcomctl32 -lcomdlg32 -ladvapi32 -lwsock32" : EndIf
 		cmd = cmd + " -lgdi32 -lwinmm"
 		If isGuiApp : cmd = cmd + " -mwindows" : EndIf
 	Case PLATFORM_MAC
 		If linkOpenGL : cmd = cmd + " -framework IOKit -framework QuartzCore -framework OpenGL" : EndIf
 		If linkSDL2 : cmd = cmd + " -lsdl2.mac -liconv -framework AudioUnit -framework Carbon -framework CoreAudio -framework ForceFeedback -framework IOKit" : EndIf
+		If linkWX : cmd = cmd + " -framework IOKit -framework Carbon -framework Cocoa -framework AudioToolbox -framework System -framework OpenGL -framework QuickTime -lwx_osx_cocoau-3.0.mac -framework WebKit -lwxregexu-3.0.mac -lwxexpat-3.0.mac -lwxtiff-3.0.mac -lwxjpeg-3.0.mac -lwxpng-3.0.mac -lz -lpthread -liconv -llzma" : EndIf
 		cmd = cmd + " -framework AppKit"
 	Case PLATFORM_LINUX
 		If linkOpenGL : cmd = cmd + " -lGL -lX11 -lXxf86vm -lXrandr -lXi" : EndIf

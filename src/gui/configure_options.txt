@@ -1,0 +1,1 @@
+./configure --disable-shared --disable-debug_flag --enable-monolithic --enable-macosx_arch=i386 --disable-precomp-headers --disable-compat28 --with-expat=builtin

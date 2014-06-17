@@ -712,6 +712,10 @@ Struct SDL_GameControllerButtonBind
 	Dim value2
 EndStruct
 
+'Struct SDL_HapticEffect
+'	Dim type	'An unsigned short!!
+'EndStruct
+
 Struct SDL_JoystickGUID
 	Dim data(4)
 EndStruct
@@ -854,7 +858,7 @@ Function SDL_SetAssertionHandler(handler, userdata)	'Both are pointers
 'Querying SDL Version
 Function SDL_GetRevision() As Pchar
 Function SDL_GetRevisionNumber%()
-Function SDL_GetVersion(ver)	'Ver is a pointer to three unsigned byte values (major, minor, patch)
+Function SDL_GetVersion(ver)	'ver is a pointer to three unsigned byte values (major, minor, patch)
 
 '----------------------------
 'VIDEO
@@ -1179,6 +1183,10 @@ Function SDL_IsGameController%(joystick_index)
 '----------------------------
 
 'Force Feedback Support
+'NOTE: haptic param is a SDL_Haptic opaque
+Function SDL_HapticClose(haptic)
+Function SDL_HapticDestroyEffect(haptic, effect)
+'Function SDL_HapticEffectSupported%(haptic, effect As SDL_HapticEffect)
 '...
 
 '----------------------------
@@ -1201,30 +1209,96 @@ Function SDL_AudioQuit()
 ' TIMERS
 '----------------------------
 
-'Timer
+'Timer Support
+Function SDL_AddTimer%(interval, callback, param As Struct)	'callback is a function pointer
 Function SDL_Delay(ms)
+'Function SDL_GetPerformanceCounter%()	'Returns an unsigned long
+Function SDL_GetPerformanceFrequency%()	'Returns an unsigned long
+Function SDL_GetTicks%()
+Function SDL_RemoveTimer%(id)
+'Function SDL_TICKS_PASSED%(A, B)	'This is not a function, but a macro. Not supported yet
+
+'----------------------------
+' FILE ABSTRACTION
+'----------------------------
+
+'Filesystem Paths
+Function SDL_GetBasePath() As Pchar
+Function SDL_GetPrefPath(org As Pchar, app As Pchar) As Pchar
+
+'File I/O Abstraction
+'...
+
+'----------------------------
+' SHARED OBJECT SUPPORT
+'----------------------------
+
+'Shared Object Loading and Function Lookup
+Function SDL_LoadFunction%(handle, name As Pchar)	'handle is a lib handle. Returns a function pointer
+Function SDL_LoadObject%(sofile As Pchar)			'Returns a lib handle
+Function SDL_UnloadObject(handle)					'handle is a lib handle
+
+'----------------------------
+' PLATFORM AND CPU INFORMATION
+'----------------------------
+
+'Platform Detection
+Function SDL_GetPlatform() As Pchar
+
+'CPU Feature Detection
+Function SDL_GetCPUCacheLineSize%()
+Function SDL_GetCPUCount%()
+Function SDL_GetSystemRAM%()
+Function SDL_Has3DNow%()
+Function SDL_HasAVX%()
+Function SDL_HasAltiVec%()
+Function SDL_HasMMX%()
+Function SDL_HasRDTSC%()
+Function SDL_HasSSE%()
+Function SDL_HasSSE2%()
+Function SDL_HasSSE3%()
+Function SDL_HasSSE41%()
+Function SDL_HasSSE42%()
+
+'Byte Order and Byte Swapping
+'Function SDL_Swap16%(x)	'Receives and returns an unsigned short
+Function SDL_Swap32%(x)
+'Function SDL_Swap64%(x)		'Receives and returns an unsigned long
+'Function SDL_SwapBE16%(x)	'Receives and returns an unsigned short
+Function SDL_SwapBE32%(x)
+'Function SDL_SwapBE64%(x)		'Receives and returns an unsigned long
+Function SDL_SwapFloat%(x#)
+Function SDL_SwapFloatBE%(x#)
+Function SDL_SwapFloatLE%(x#)
+'Function SDL_SwapLE16%(x)	'Receives and returns an unsigned short
+Function SDL_SwapLE32%(x)
+'Function SDL_SwapLE64%(x)		'Receives and returns an unsigned long
+
+'Bit-level Operations
+Function SDL_MostSignificantBitIndex32%(x)
+
+'----------------------------
+' POWER MANAGEMENT
+'----------------------------
+
+Const SDL_POWERSTATE_UNKNOWN = 0
+Const SDL_POWERSTATE_ON_BATTERY = 1
+Const SDL_POWERSTATE_NO_BATTERY = 2
+Const SDL_POWERSTATE_CHARGING = 3
+Const SDL_POWERSTATE_CHARGED = 4
+
+'Power Management Status
+Function SDL_GetPowerInfo%(secs, pct)	'Args are int pointers
+
+'----------------------------
+' ADDITIONAL
+'----------------------------
+
+'Platform-specific functionality
+Function SDL_AndroidGetActivity%()	'Returns a pointer
+Function SDL_AndroidGetExternalStoragePath() As Pchar
+Function SDL_AndroidGetExternalStorageState%()
+Function SDL_AndroidGetInternalStoragePath() As Pchar
+Function SDL_AndroidGetJNIEnv%()	'Returns a pointer
 
 EndExtern
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

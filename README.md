@@ -4,4 +4,4 @@ The nbc and nbmake tools are released under the terms of the GNU General Public 
 
 The language modules are released under the Zlib license (included in the file zlib.txt).
 
-Modules that are simple bindings for other libraries (like GLFW3) retain the same license as the original library.
+Modules that are simple bindings for other libraries (like SDL2) retain the same license as the original library.

@@ -1,25 +1,30 @@
 V0.5:
 + Improve options of Extern blocks
-+ Fix bug width negative literals
++ Fix bug with negative literals
 + Create Geany definition file
-* Add SDL, SDL_mixer, SDL_image, SDL_net, SDL_gfx modules (SDL2)
-- Update information on webpage
-- Replace forums with phpBB
++ Replace forums with phpBB
+- Add functions for bitwise operations (BitAnd, BitOr, BitXor, Shl, Shr)
+- Add 3D vector, quaternion and matrix functions
+* Add SDL, SDL_image, SDL_gfx, SDL_mixer and SDL_net modules (SDL2)
++ Update information on webpage
 - Add PayPal donation link
 
 V0.5.1:
-- Struct field names clash with global names
-- Add Opaque structs
-- Add bitwise operators (&, |, ^, Shl, Shr)
-- Change arrays to std::vector (no CreateArray nor FreeArray, allocate on stack with Dim arr(len, len...) or Dim arr(,...)
+- Change arrays to std::vector (no CreateArray nor FreeArray, allocate on stack with Dim arr(len, len) or Dim arr(,), resize with Redim arr(len, len))
 - Pass strings and arrays by reference (return copy)
+- Add Opaque structs
+- Adapt pointers in Core module to use opaque structs (function pointers should be of opaque type FuncHandle)
+- Remove support for direct function pointers (add a FunctionHandle(name$) As FuncHandle function)
+- Adapt pointers in SDL2 modules to use opaque structs
+- Struct field names clash with global names
 - Create TextWrangler definition file
 
+- Replace Dictionary functions with IntMap and StringMap
+- Create Irrlicht module
 
 V0.6:
+- Create Game module (2D only), written in NextBasic with SDL2
 - Create Lua module
-
-- Add Irrlicht module
 - Add INI module
 - Add JSON module
 - Add XML module
@@ -28,7 +33,7 @@ V0.7:
 - Add Android and iOS targets
 
 V0.8:
-- Create Gui module based on LCL
+- Create Gui module based on LCL (or wxWidgets?)
 
 V1.0:
 - Add doc generator
@@ -37,13 +42,11 @@ V1.0:
 - Add unit tests
 
 V1.0+:
-- Visual GUI editor
-- Fix bundled app path in Snow Leopard
+- 64 bit support
+- Add StaticLib, SharedLib to $Option directive (static and shared lib generation support)
+- Add $If, $ElseIf, $Else, $EndIf, with directives: Windows, Mac, Linux, iOS, Android, Phone, Tablet, Arch32, Arch64
 - Add "." as operator in parser (do not use the ParseVarAccess crap anymore)
 - Copy shared libraries with executable
-- Add StaticLib, SharedLib to $Option directive (static and shared lib generation support)
-- Add $If, $ElseIf, $Else, $EndIf, with directives: Windows, Mac, Linux, iOS, Android, Phone, Tablet
 - Rewrite compiler in NextBasic?
 - Add unicode support
 - Add multithreading
-- Add debugger
