@@ -1,0 +1,137 @@
+Struct Screen
+	Dim win
+	Dim renderer
+	Dim shouldClose
+	Dim width
+	Dim height
+	Dim lastTime#
+	Dim deltaTim#
+	Dim currentFPS
+	Dim fpsCounter
+	Dim fpsAccum#
+EndStruct
+
+Dim _screen_SDLInit
+Dim _screen_desktopWidth
+Dim _screen_desktopHeight
+
+Function CreateScreen(width, height, fullscreen) As Screen
+	Dim scr As Screen = New Screen
+	scr.width = width
+	scr.height = height
+	scr.shouldClose = False
+
+	'Init SDL
+	_screen_InitSDL()
+	
+	'Open screen
+	Dim flags = 0
+	If fullscreen : flags = flags + SDL_WINDOW_FULLSCREEN : EndIf
+	scr.win = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags)
+	scr.renderer = SDL_CreateRenderer(scr.win, -1, SDL_RENDERER_ACCELERATED + SDL_RENDERER_PRESENTVSYNC)
+	
+	'Init timer
+	scr.lastTime = SDL_GetTicks() / 1000.0
+EndFunction
+
+Function FreeScreen(scr As Screen)
+	SDL_DestroyRenderer(scr.renderer)
+	SDL_DestroyWindow(scr.win)
+	Delete scr
+EndFunction
+
+Function SetScreenTitle(scr As Screen, title$)
+	SDL_SetWindowTitle(scr.win, title)
+EndFunction
+
+Function ScreenShouldClose%(scr As Screen)
+	Return scr.shouldClose
+EndFunction
+
+Function ClearScreen(scr As Screen, r, g, b)
+	r_SetCurrent(scr.renderer)
+	r_Clear(r, g, b)
+EndFunction
+
+Function RefreshScreen(scr As Screen)
+	'Update timer
+	scr.deltaTim = (SDL_GetTicks()/1000.0) - scr.lastTime
+	scr.lastTime = SDL_GetTicks()/1000.0
+	
+	'Update FPS
+	scr.fpsCounter = scr.fpsCounter + 1
+	scr.fpsAccum = scr.fpsAccum + scr.deltaTim
+	If scr.fpsAccum >= 1.0
+		scr.currentFPS = scr.fpsCounter
+		scr.fpsCounter = 0
+		scr.fpsAccum = 0
+	EndIf
+	
+	'Poll events
+	Dim event As SDL_Event = New SDL_Event
+	While SDL_PollEvent(event)
+		Select event.type
+			Case SDL_WINDOWEVENT
+				If event.padding(1) = SDL_WINDOWEVENT_CLOSE And event.padding(0) = SDL_GetWindowID(scr.win) 'event, windowID
+					scr.shouldClose = True
+				EndIf
+			Case SDL_QUIT
+				'Do something here? ...
+		EndSelect
+	EndWhile
+	Delete event
+	
+	'Refresh screen
+	SDL_RenderPresent(scr.renderer)
+EndFunction
+
+Function ScreenWidth%(scr As Screen)
+	Return scr.width
+EndFunction
+
+Function ScreenHeight%(scr As Screen)
+	Return scr.height
+EndFunction
+
+Function ScreenFPS%(scr As Screen)
+	Return scr.currentFPS
+EndFunction
+
+Function DesktopWidth%()
+	_screen_InitSDL()
+	Return _screen_desktopWidth
+EndFunction
+
+Function DesktopHeight%()
+	_screen_InitSDL()
+	Return _screen_desktopHeight
+EndFunction
+
+Function DeltaTime#(scr As Screen)
+	Return scr.deltaTim
+EndFunction
+
+Function _screen_InitSDL()
+	If Not _screenSDLInit
+		'Init SDL
+		If SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO) = 0
+			'Window hints
+			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8)
+			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8)
+			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8)
+			'SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16)
+			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1)
+			'SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1)
+			'SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4)
+	
+			'Get desktop dimensions
+			Dim displayMode As SDL_DisplayMode = New SDL_DisplayMode
+			SDL_GetDesktopDisplayMode(0, displayMode)
+			_screen_desktopWidth = displayMode.w
+			_screen_desktopHeight = displayMode.h
+			Delete displayMode
+
+			_screen_SDLInit = True
+		EndIf
+	EndIf
+EndFunction

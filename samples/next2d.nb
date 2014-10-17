@@ -1,0 +1,16 @@
+$Option Gui
+$Use Next2D
+
+Program
+	'Create screen
+	'Dim scr As Screen = CreateScreen(640, 480, False)
+
+	'While Not ScreenShouldClose(scr)
+	'	RefreshScreen()
+	'EndWhile
+	
+	'Close screen
+	'FreeScreen(scr)
+	
+	Return 0
+EndProgram

@@ -1,0 +1,10 @@
+Dim _renderer_current
+
+Function r_SetCurrent(renderer)
+	_renderer_current = renderer
+EndFunction
+
+Function r_Clear(r, g, b)
+	SDL_SetRenderDrawColor(_renderer_current, r, g, b, 255)
+	SDL_RenderClear(_renderer_current)
+EndFunction

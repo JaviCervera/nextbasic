@@ -1,4 +1,3 @@
-$Use gles20
-$Use glfw3
-$Include "screen.nb"
-
+$Use sdl2
+'$Include "renderer_sdl.nb"
+'$Include "screen_sdl.nb"

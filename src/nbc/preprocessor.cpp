@@ -14,8 +14,10 @@ void Preprocessor::Preprocess(const std::vector<Token> &tokens) {
     // Create stream
     TokenStream stream(tokens);
 
-    // This points to the first non-preprocessor token
-    int first = 0;
+	// This will point to first non preprocessor token
+	int first = 0;
+
+	// Go to the first non end-of-line token
     while ( stream.HasNext() && stream.Peek().Type() == TokenEndOfLine ) {
         first++;
         stream.Skip(1);

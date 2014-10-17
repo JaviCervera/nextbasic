@@ -66,7 +66,7 @@ Token Lexical::NextToken() {
 
 	// Check number
 	if ( IsNumber(buffer[p])
-			|| (p < (int)buffer.length()-1 && (buffer[p] == '$' && IsNumber(buffer[p+1]))) ) {
+			|| (p < (int)buffer.length()-1 && (buffer[p] == '$' && (IsNumber(buffer[p+1]) || IsHexChar(buffer[p+1])))) ) {
 		TokenType type = TokenIntLiteral;
 		bool isHex = (buffer[p] == '$');
 		string str(1, buffer[p++]);
